@@ -4,6 +4,7 @@
 #include <mbgl/vulkan/renderable_resource.hpp>
 #include <mbgl/vulkan/context.hpp>
 #include <mbgl/util/logging.hpp>
+#include <cstdio>
 
 namespace mbgl {
 namespace vulkan {
@@ -17,8 +18,15 @@ RenderPass::RenderPass(CommandEncoder& commandEncoder_, const char* name, const 
 
     std::array<vk::ClearValue, 2> clearValues;
 
-    if (descriptor.clearColor.has_value())
-        clearValues[0].setColor(descriptor.clearColor.value().operator std::array<float, 4>());
+    if (descriptor.clearColor.has_value()) {
+        auto color = descriptor.clearColor.value().operator std::array<float, 4>();
+        clearValues[0].setColor(color);
+        fprintf(stderr, "Clear color: %.2f, %.2f, %.2f, %.2f\n", color[0], color[1], color[2], color[3]);
+    } else {
+        // Default to black if no clear color is specified
+        clearValues[0].setColor(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f});
+        fprintf(stderr, "Clear color: default black\n");
+    }
     clearValues[1].depthStencil.setDepth(descriptor.clearDepth.value_or(1.0f));
     clearValues[1].depthStencil.setStencil(descriptor.clearStencil.value_or(0));
 
@@ -27,6 +35,16 @@ RenderPass::RenderPass(CommandEncoder& commandEncoder_, const char* name, const 
                                          .setFramebuffer(resource.getFramebuffer().get())
                                          .setRenderArea({{0, 0}, resource.getExtent()})
                                          .setClearValues(clearValues);
+
+    // Debug: Log when we begin a render pass with our framebuffer
+    static int renderPassCount = 0;
+    if (renderPassCount++ % 10 == 0) {
+        fprintf(stderr, "Beginning Vulkan render pass with framebuffer: %p, renderPass: %p, extent: %dx%d\n",
+                static_cast<void*>(resource.getFramebuffer().get()),
+                static_cast<void*>(resource.getRenderPass().get()),
+                resource.getExtent().width,
+                resource.getExtent().height);
+    }
 
     pushDebugGroup(name);
 
@@ -43,6 +61,7 @@ RenderPass::~RenderPass() {
 }
 
 void RenderPass::endEncoding() {
+    fprintf(stderr, "Ending render pass\n");
     commandEncoder.getCommandBuffer()->endRenderPass(commandEncoder.getContext().getBackend().getDispatcher());
 }
 

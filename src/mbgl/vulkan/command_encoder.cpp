@@ -3,6 +3,7 @@
 #include <mbgl/vulkan/renderable_resource.hpp>
 #include <mbgl/vulkan/upload_pass.hpp>
 #include <mbgl/vulkan/render_pass.hpp>
+#include <mbgl/util/logging.hpp>
 
 #include <cstring>
 
@@ -21,6 +22,9 @@ std::unique_ptr<gfx::UploadPass> CommandEncoder::createUploadPass(const char* na
 
 std::unique_ptr<gfx::RenderPass> CommandEncoder::createRenderPass(const char* name,
                                                                   const gfx::RenderPassDescriptor& descriptor) {
+#ifndef NDEBUG
+    mbgl::Log::Debug(mbgl::Event::Render, std::string("CommandEncoder::createRenderPass called for: ") + name);
+#endif
     return std::make_unique<RenderPass>(*this, name, descriptor);
 }
 

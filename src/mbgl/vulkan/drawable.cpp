@@ -304,6 +304,8 @@ void Drawable::draw(PaintParameters& parameters) const {
         commandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get(), dispatcher);
 
         if (segment.indexLength) {
+            fprintf(stderr, "Executing drawIndexed: indexLength=%zu, instances=%zu, indexOffset=%zu, vertexOffset=%zu\n",
+                    segment.indexLength, instances, segment.indexOffset, segment.vertexOffset);
             commandBuffer->drawIndexed(static_cast<uint32_t>(segment.indexLength),
                                        static_cast<uint32_t>(instances),
                                        static_cast<uint32_t>(segment.indexOffset),
@@ -311,6 +313,8 @@ void Drawable::draw(PaintParameters& parameters) const {
                                        0,
                                        dispatcher);
         } else {
+            fprintf(stderr, "Executing draw: vertexLength=%zu, instances=%zu, vertexOffset=%zu\n",
+                    segment.vertexLength, instances, segment.vertexOffset);
             commandBuffer->draw(static_cast<uint32_t>(segment.vertexLength),
                                 static_cast<uint32_t>(instances),
                                 static_cast<uint32_t>(segment.vertexOffset),

@@ -10,6 +10,8 @@
 #include <mbgl/renderer/render_tree.hpp>
 #include <mbgl/renderer/update_parameters.hpp>
 #include <mbgl/util/instrumentation.hpp>
+#include <mbgl/util/logging.hpp>
+#include <cstdio>
 
 namespace mbgl {
 
@@ -40,8 +42,22 @@ void Renderer::render(const std::shared_ptr<UpdateParameters>& updateParameters)
         impl->dynamicTextureAtlas = std::make_unique<gfx::DynamicTextureAtlas>(context);
     }
     if (auto renderTree = impl->orchestrator.createRenderTree(updateParameters, impl->dynamicTextureAtlas)) {
+        fprintf(stderr, "RenderTree created, preparing and rendering\n");
+#ifndef NDEBUG
+        mbgl::Log::Debug(mbgl::Event::Render, "RenderTree created, calling prepare and render");
+#endif
         renderTree->prepare();
         impl->render(*renderTree, updateParameters);
+    } else {
+        static int noTreeCount = 0;
+        if (noTreeCount++ % 30 == 0) {
+            fprintf(stderr, "No render tree created (count=%d)\n", noTreeCount);
+        }
+#ifndef NDEBUG
+        if (noTreeCount % 30 == 0) {
+            mbgl::Log::Debug(mbgl::Event::Render, "No render tree created");
+        }
+#endif
     }
 }
 

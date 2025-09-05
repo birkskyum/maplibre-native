@@ -41,7 +41,9 @@ else()
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
              COMPONENTS Gui
+                        GuiPrivate
                         Network
+                        OpenGLWidgets
              REQUIRED)
 
 if(NOT MLN_QT_WITH_INTERNAL_SQLITE)

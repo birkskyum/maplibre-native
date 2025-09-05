@@ -339,12 +339,14 @@ void Renderer::Impl::render(const RenderTree& renderTree, const std::shared_ptr<
             } else if (!backend.contextIsShared()) {
                 color = renderTreeParameters.backgroundColor;
             }
+            fprintf(stderr, "Creating render pass for main buffer\n");
             parameters.renderPass = parameters.encoder->createRenderPass(
                 "main buffer",
                 {.renderable = parameters.backend.getDefaultRenderable(),
                  .clearColor = color,
                  .clearDepth = 1.0f,
                  .clearStencil = 0});
+            fprintf(stderr, "Render pass created: %p\n", parameters.renderPass.get());
         }
     };
 
