@@ -107,7 +107,9 @@ MTL::PixelFormat Texture2D::getMetalPixelFormat() const noexcept {
                 case gfx::TexturePixelType::RGBA:
                     return MTL::PixelFormat::PixelFormatRGBA8Unorm;
                 case gfx::TexturePixelType::Alpha:
-                    return MTL::PixelFormat::PixelFormatA8Unorm;
+                    // Use R8Unorm instead of A8Unorm for better compatibility
+                    // Many Metal devices have issues with A8Unorm textures
+                    return MTL::PixelFormat::PixelFormatR8Unorm;
                 case gfx::TexturePixelType::Stencil:
                     return MTL::PixelFormat::PixelFormatStencil8;
                 default:
@@ -119,6 +121,7 @@ MTL::PixelFormat Texture2D::getMetalPixelFormat() const noexcept {
                 case gfx::TexturePixelType::RGBA:
                     return MTL::PixelFormat::PixelFormatRGBA16Float;
                 case gfx::TexturePixelType::Alpha:
+                    // Use R16Float for alpha textures (single channel)
                     return MTL::PixelFormat::PixelFormatR16Float;
                 default:
                     assert(false);
@@ -129,6 +132,7 @@ MTL::PixelFormat Texture2D::getMetalPixelFormat() const noexcept {
                 case gfx::TexturePixelType::RGBA:
                     return MTL::PixelFormat::PixelFormatRGBA32Float;
                 case gfx::TexturePixelType::Alpha:
+                    // Use R32Float for alpha textures (single channel)
                     return MTL::PixelFormat::PixelFormatR32Float;
                 case gfx::TexturePixelType::Depth:
                     return MTL::PixelFormat::PixelFormatDepth32Float;

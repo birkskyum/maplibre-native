@@ -440,7 +440,8 @@ half4 fragment fragmentMain(FragmentStage in [[stage_in]],
     const half4 color = tileProps.is_halo ? halo_color : fill_color;
     const float gamma = ((tileProps.is_halo ? (halo_blur * 1.19 / SDF_PX) : 0) + EDGE_GAMMA) / fontGamma;
     const float buff = tileProps.is_halo ? (6.0 - halo_width / in.fontScale) / SDF_PX : (256.0 - 64.0) / 256.0;
-    const float dist = image.sample(image_sampler, float2(in.tex)).a;
+    // For glyph textures, we use R8Unorm format on Metal, so read from red channel
+    const float dist = image.sample(image_sampler, float2(in.tex)).r;
     const float gamma_scaled = gamma * in.gamma_scale;
     const float alpha = smoothstep(buff - gamma_scaled, buff + gamma_scaled, dist);
 
@@ -677,7 +678,8 @@ half4 fragment fragmentMain(FragmentStage in [[stage_in]],
     const float fontGamma = in.fontScale * tileProps.gamma_scale;
     const float gamma = ((tileProps.is_halo ? (halo_blur * 1.19 / SDF_PX) : 0) + EDGE_GAMMA) / fontGamma;
     const float buff = tileProps.is_halo ? (6.0 - halo_width / in.fontScale) / SDF_PX : (256.0 - 64.0) / 256.0;
-    const float dist = glyph_image.sample(glyph_sampler, float2(in.tex)).a;
+    // For glyph textures, we use R8Unorm format on Metal, so read from red channel
+    const float dist = glyph_image.sample(glyph_sampler, float2(in.tex)).r;
     const float gamma_scaled = gamma * in.gamma_scale;
     const float alpha = smoothstep(buff - gamma_scaled, buff + gamma_scaled, dist);
 

@@ -94,6 +94,11 @@ mat4 PaintParameters::matrixForTile(const UnwrappedTileID& tileID, bool aligned)
 }
 
 gfx::DepthMode PaintParameters::depthModeForSublayer([[maybe_unused]] uint8_t n, gfx::DepthMaskType mask) const {
+    // For Metal backend, always enable depth testing for proper tile layering
+#if MLN_RENDER_BACKEND_METAL
+    // Always use depth testing to ensure higher zoom tiles render on top
+    return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask};
+#else
     if (currentLayer < opaquePassCutoff) {
         return gfx::DepthMode::disabled();
     }
@@ -103,6 +108,7 @@ gfx::DepthMode PaintParameters::depthModeForSublayer([[maybe_unused]] uint8_t n,
     return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask, {depth, depth}};
 #else
     return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask};
+#endif
 #endif
 }
 
