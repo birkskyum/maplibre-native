@@ -94,21 +94,21 @@ mat4 PaintParameters::matrixForTile(const UnwrappedTileID& tileID, bool aligned)
 }
 
 gfx::DepthMode PaintParameters::depthModeForSublayer([[maybe_unused]] uint8_t n, gfx::DepthMaskType mask) const {
-    // For Metal backend, always enable depth testing for proper tile layering
-#if MLN_RENDER_BACKEND_METAL
+    // For modern backends (Metal, Vulkan, OpenGL with RHI), always enable depth testing for proper tile layering
+    // This ensures higher zoom tiles render correctly on top of lower zoom tiles
+#if MLN_RENDER_BACKEND_METAL || MLN_RENDER_BACKEND_VULKAN
     // Always use depth testing to ensure higher zoom tiles render on top
     return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask};
+#elif MLN_RENDER_BACKEND_OPENGL
+    // For OpenGL, always enable depth testing with proper depth range
+    // Skip the opaque pass cutoff check to ensure tiles layer correctly
+    float depth = depthRangeSize + ((1 + currentLayer) * numSublayers + n) * depthEpsilon;
+    return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask, {depth, depth}};
 #else
     if (currentLayer < opaquePassCutoff) {
         return gfx::DepthMode::disabled();
     }
-
-#if MLN_RENDER_BACKEND_OPENGL
-    float depth = depthRangeSize + ((1 + currentLayer) * numSublayers + n) * depthEpsilon;
-    return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask, {depth, depth}};
-#else
     return gfx::DepthMode{gfx::DepthFunctionType::LessEqual, mask};
-#endif
 #endif
 }
 
