@@ -208,9 +208,9 @@ int main(int argc, char* argv[]) {
     if (style.empty()) {
         const char* url = getenv("MLN_STYLE_URL");
         if (url == nullptr) {
-            mbgl::util::DefaultStyle newStyle = orderedStyles[0];
-            style = newStyle.getUrl();
-            view->setWindowTitle(newStyle.getName());
+            // Use demotiles instead of MapTiler (which requires API key)
+            style = "https://demotiles.maplibre.org/style.json";
+            view->setWindowTitle("MapLibre Demo Tiles");
         } else {
             style = url;
             view->setWindowTitle(url);
