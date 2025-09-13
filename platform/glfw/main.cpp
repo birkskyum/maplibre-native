@@ -207,6 +207,9 @@ int main(int argc, char* argv[]) {
     }
 
     map.getStyle().loadURL(style);
+    
+    // Trigger initial render
+    view->invalidate();
 
     view->run();
 
