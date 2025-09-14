@@ -1675,7 +1675,7 @@ if(MLN_WITH_CORE_ONLY)
     return()
 endif()
 
-include(${PROJECT_SOURCE_DIR}/scripts/license.cmake)
+# include(${PROJECT_SOURCE_DIR}/scripts/license.cmake)
 
 if(MLN_WITH_QT)
     include(${PROJECT_SOURCE_DIR}/platform/qt/qt.cmake)
