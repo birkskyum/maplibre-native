@@ -549,9 +549,115 @@ struct ShaderSource<BuiltIn::FillOutlineTriangulatedShader, gfx::Backend::Type::
     static const std::array<AttributeInfo, 2> attributes;
     static constexpr std::array<AttributeInfo, 0> instanceAttributes{};
     static const std::array<TextureInfo, 0> textures;
-    
-    static constexpr const char* vertex = "";
-    static constexpr const char* fragment = "";
+
+    static constexpr const char* vertex = R"(
+struct VertexInput {
+    @location(0) pos_normal: vec2<i32>,
+    @location(1) data: vec4<u32>,
+};
+
+struct VertexOutput {
+    @builtin(position) position: vec4<f32>,
+    @location(0) width2: f32,
+    @location(1) normal: vec2<f32>,
+    @location(2) gamma_scale: f32,
+};
+
+struct FillOutlineTriangulatedDrawableUBO {
+    matrix: mat4x4<f32>,
+    ratio: f32,
+    pad1: f32,
+    pad2: f32,
+    pad3: f32,
+};
+
+struct GlobalPaintParamsUBO {
+    pattern_atlas_texsize: vec2<f32>,
+    units_to_pixels: vec2<f32>,
+    world_size: vec2<f32>,
+    camera_to_center_distance: f32,
+    symbol_fade_change: f32,
+    aspect_ratio: f32,
+    pixel_ratio: f32,
+    map_zoom: f32,
+    pad1: f32,
+};
+
+struct GlobalIndexUBO {
+    value: u32,
+    pad0: vec3<u32>,
+};
+
+@group(0) @binding(0) var<uniform> paintParams: GlobalPaintParamsUBO;
+@group(0) @binding(2) var<storage, read> drawableVector: array<FillOutlineTriangulatedDrawableUBO>;
+@group(0) @binding(1) var<uniform> globalIndex: GlobalIndexUBO;
+
+@vertex
+fn main(in: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    let drawable = drawableVector[globalIndex.value];
+
+    let ANTIALIASING = 0.5 / paintParams.pixel_ratio;
+
+    let pos_normal = vec2<f32>(f32(in.pos_normal.x), f32(in.pos_normal.y));
+    let pos = floor(pos_normal * 0.5);
+    let normal_bits = pos_normal - 2.0 * pos;
+    let v_normal = vec2<f32>(normal_bits.x, normal_bits.y * 2.0 - 1.0);
+
+    let a_extrude = vec2<f32>(f32(in.data.x), f32(in.data.y)) - 128.0;
+
+    let width = 1.0;
+    let halfwidth = width * 0.5;
+    let outset = halfwidth + select(0.0, ANTIALIASING, halfwidth != 0.0);
+
+    let dist = outset * a_extrude * LINE_NORMAL_SCALE;
+
+    let projected_extrude = drawable.matrix * vec4<f32>(dist / drawable.ratio, vec2<f32>(0.0, 0.0));
+    let position = drawable.matrix * vec4<f32>(pos, 0.0, 1.0) + projected_extrude;
+
+    let extrude_length_without_perspective = length(dist);
+    let extrude_length_with_perspective = length(projected_extrude.xy / position.w * paintParams.units_to_pixels);
+
+    let ndc_z = (position.z / position.w) * 0.5 + 0.5;
+    out.position = vec4<f32>(position.x / position.w,
+                             position.y / position.w,
+                             ndc_z,
+                             1.0);
+    out.width2 = outset;
+    out.normal = v_normal;
+    out.gamma_scale = extrude_length_without_perspective / max(extrude_length_with_perspective, 1e-6);
+
+    return out;
+}
+)";
+
+    static constexpr const char* fragment = R"(
+struct FragmentInput {
+    @location(0) width2: f32,
+    @location(1) normal: vec2<f32>,
+    @location(2) gamma_scale: f32,
+};
+
+struct FillEvaluatedPropsUBO {
+    color: vec4<f32>,
+    outline_color: vec4<f32>,
+    opacity: f32,
+    fade: f32,
+    from_scale: f32,
+    to_scale: f32,
+};
+
+@group(0) @binding(0) var<uniform> paintParams: GlobalPaintParamsUBO;
+@group(0) @binding(5) var<uniform> props: FillEvaluatedPropsUBO;
+
+@fragment
+fn main(in: FragmentInput) -> @location(0) vec4<f32> {
+    let dist = length(in.normal) * in.width2;
+    let blur2 = max((1.0 / paintParams.pixel_ratio) * in.gamma_scale, 1e-6);
+    let alpha = clamp(min(dist + blur2, in.width2 - dist) / blur2, 0.0, 1.0);
+    return props.outline_color * (alpha * props.opacity);
+}
+)";
 };
 
 } // namespace shaders

@@ -27,6 +27,7 @@ cmake --build build --target mbgl-glfw -- -j8
 - Uniform buffers are allocated with 256-byte alignment before upload, satisfying Dawn's minimum binding size (the global index UBO now binds as 256 bytes instead of 16).
 - Pipelines for placeholder shaders (for example, `FillOutlineTriangulatedShader`) are skipped when no WGSL entry point exists, preventing repeated "entry point missing" validation errors while the WGSL is still being authored.
 - Removed the leftover Metal-style Y flip in WebGPU vertex shaders (fill, background, line, clipping mask), so clip-space now matches Dawn’s convention and maps render right-side up.
+- Added WGSL for `FillOutlineTriangulatedShader`, so fill outlines now render instead of being skipped every frame.
 - Detect the Dawn surface's preferred color format and propagate it through the renderer backend. The GLFW WebGPU backend now queries `wgpuSurfaceGetCapabilities`, selects a renderable format (preferring `BGRA8Unorm` for broad compatibility), updates the CAMetalLayer pixel format accordingly, and shares the choice with shader pipeline creation.
 - Maintain the swapchain `viewFormats` storage inside the GLFW backend so Dawn sees a stable pointer across reconfigurations, and lock the Metal layer to sRGB color space to avoid color-management surprises.
 - WebGPU drawables once again honour the layer-provided colour mask: the WebGPU-specific `Drawable::setColorMode` now forwards to the base implementation instead of discarding the request, so blend/state configuration matches Metal/Vulkan and fragments actually land in the swapchain.
@@ -41,6 +42,7 @@ cmake --build build --target mbgl-glfw -- -j8
 
 ## Observations
 - `./build/platform/glfw/mbgl-glfw --backend=webgpu --style=https://demotiles.maplibre.org/style.json` now reports `WebGPU: selected surface format BGRA8Unorm` and renders the MapLibre demo tiles correctly on macOS. The translucent/opaque passes log non-zero drawable counts, confirming geometry is making it through the pipeline.
+- Animations stutter because the fill-outline shader still lacks WGSL; the renderer logs skips for `crimea-fill/fill-outline` each frame.
 - `./run_webgpu.sh` renders the MapLibre demo style end-to-end with WebGPU/Dawn. There are no remaining Dawn validation errors in the steady state.
 - For automated runs use `gtimeout 20 ./run_webgpu.sh` (part of GNU coreutils) to auto-exit after a short soak; otherwise close the GLFW window by hand.
 - Linking still warns about the Dawn static libs targeting macOS 15.0 while the project is built for 14.3. Bumping `CMAKE_OSX_DEPLOYMENT_TARGET` silences the noise if desired.
