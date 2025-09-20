@@ -10,6 +10,7 @@
 #include <queue>
 #include <atomic>
 #include <array>
+#include <condition_variable>
 
 struct GLFWwindow;
 struct WGPUDeviceImpl;
@@ -84,6 +85,8 @@ private:
 
     // Frame synchronization
     std::atomic<bool> frameInProgress{false};
+    std::mutex frameMutex;
+    std::condition_variable frameCompleteCv;
     // Track if we have presented the current frame
     std::atomic<bool> framePresented{true};
     

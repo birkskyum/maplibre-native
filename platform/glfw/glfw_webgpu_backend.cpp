@@ -660,25 +660,33 @@ void* GLFWWebGPUBackend::getCurrentTextureView() {
         consecutiveErrors = 0;
     }
 
-    std::unique_lock<SpinLock> lock(textureStateLock);
+    while (true) {
+        std::unique_lock<SpinLock> lock(textureStateLock);
 
-    if (currentTextureView && !framePresented) {
-        return reinterpret_cast<void*>(currentTextureView.Get());
+        if (currentTextureView && !framePresented) {
+            return reinterpret_cast<void*>(currentTextureView.Get());
+        }
+
+        if (framePresented) {
+            currentTextureView = nullptr;
+            currentTexture = nullptr;
+        }
+
+        bool expected = false;
+        if (frameInProgress.compare_exchange_strong(expected, true)) {
+            framePresented = false;
+            lock.unlock();
+            break;
+        }
+
+        lock.unlock();
+
+        // The previous frame is still in flight; block until it completes, mirroring
+        // the fence-based synchronization used by the Vulkan backend.
+        if (!waitForFrame(std::chrono::milliseconds::max())) {
+            return nullptr;
+        }
     }
-
-    if (framePresented) {
-        currentTextureView = nullptr;
-        currentTexture = nullptr;
-    }
-
-    bool expected = false;
-    if (!frameInProgress.compare_exchange_strong(expected, true)) {
-        return nullptr;
-    }
-
-    framePresented = false;
-
-    lock.unlock();
 
     wgpu::SurfaceTexture surfaceTexture;
 
@@ -719,9 +727,8 @@ void* GLFWWebGPUBackend::getCurrentTextureView() {
         return nullptr;
     }
 
-    lock.lock();
-
     // Create texture view with explicit descriptor
+    std::unique_lock<SpinLock> lock(textureStateLock);
     wgpu::TextureViewDescriptor viewDesc = {};
     viewDesc.format = swapChainFormat;
     viewDesc.dimension = wgpu::TextureViewDimension::e2D;
@@ -901,27 +908,41 @@ void GLFWWebGPUBackend::createDepthStencilTexture(uint32_t width, uint32_t heigh
 }
 
 bool GLFWWebGPUBackend::waitForFrame(std::chrono::milliseconds timeout) {
-    const auto start = std::chrono::steady_clock::now();
+    processEvents();
 
-    while (frameInProgress.load(std::memory_order_acquire)) {
-        if (isShuttingDown.load(std::memory_order_acquire)) {
-            return true;
-        }
-
-        processEvents();
-
-        if (std::chrono::steady_clock::now() - start >= timeout) {
-            return false;
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    if (!frameInProgress.load(std::memory_order_acquire)) {
+        return true;
     }
 
-    return true;
+    std::unique_lock<std::mutex> lock(frameMutex);
+
+    const auto predicate = [this]() {
+        return !frameInProgress.load(std::memory_order_acquire) ||
+               isShuttingDown.load(std::memory_order_acquire);
+    };
+
+    bool completed = false;
+    if (timeout == std::chrono::milliseconds::max()) {
+        frameCompleteCv.wait(lock, predicate);
+        completed = !frameInProgress.load(std::memory_order_acquire);
+    } else {
+        completed = frameCompleteCv.wait_for(lock, timeout, predicate) &&
+                    !frameInProgress.load(std::memory_order_acquire);
+    }
+
+    return completed || isShuttingDown.load(std::memory_order_acquire);
 }
 
 void GLFWWebGPUBackend::signalFrameComplete() {
+    if (!frameInProgress.load(std::memory_order_acquire)) {
+        return;
+    }
+
     frameInProgress.store(false, std::memory_order_release);
+    {
+        std::lock_guard<std::mutex> lock(frameMutex);
+        frameCompleteCv.notify_all();
+    }
 }
 
 void GLFWWebGPUBackend::periodicMaintenance() {
