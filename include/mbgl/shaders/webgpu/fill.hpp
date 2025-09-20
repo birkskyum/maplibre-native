@@ -65,12 +65,7 @@ fn main(@builtin(vertex_index) vertex_id: u32, in: VertexInput) -> VertexOutput 
     // Transform position using the matrix
     let drawable = drawableVector[globalIndex.value].fill;
     let clip = drawable.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
-    let invW = 1.0 / clip.w;
-    let ndcZ = (clip.z * invW) * 0.5 + 0.5;
-    out.position = vec4<f32>(clip.x * invW,
-                             clip.y * invW,
-                             ndcZ,
-                             1.0);
+    out.position = clip;
 
     var color = props.color;
     if (drawable.pad1 > 0.5) {
@@ -160,12 +155,7 @@ fn main(@builtin(vertex_index) vertex_id: u32, in: VertexInput) -> VertexOutput 
     // Transform position using the matrix
     let drawable = drawableVector[globalIndex.value].fill;
     let clip = drawable.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
-    let invW = 1.0 / clip.w;
-    let ndcZ = (clip.z * invW) * 0.5 + 0.5;
-    out.position = vec4<f32>(clip.x * invW,
-                             clip.y * invW,
-                             ndcZ,
-                             1.0);
+    out.position = clip;
 
     var color = props.outline_color;
     if (drawable.pad1 > 0.5) {
@@ -295,12 +285,7 @@ fn main(in: VertexInput) -> VertexOutput {
 
     let pos = vec2<f32>(f32(in.position.x), f32(in.position.y));
     let clip = drawable.matrix * vec4<f32>(pos, 0.0, 1.0);
-    let invW = 1.0 / clip.w;
-    let ndcZ = (clip.z * invW) * 0.5 + 0.5;
-    out.position = vec4<f32>(clip.x * invW,
-                             clip.y * invW,
-                             ndcZ,
-                             1.0);
+    out.position = clip;
     out.v_pos_a = get_pattern_pos(
         drawable.pixel_coord_upper,
         drawable.pixel_coord_lower,
@@ -487,12 +472,7 @@ fn main(in: VertexInput) -> VertexOutput {
     let clip = drawable.matrix * vec4<f32>(pos, 0.0, 1.0);
     let invW = 1.0 / clip.w;
     let ndcXY = clip.xy * invW;
-    let ndcZ = (clip.z * invW) * 0.5 + 0.5;
-
-    out.position = vec4<f32>(ndcXY.x,
-                             -ndcXY.y,
-                             ndcZ,
-                             1.0);
+    out.position = clip;
     out.v_pos_a = get_pattern_pos(
         drawable.pixel_coord_upper,
         drawable.pixel_coord_lower,
@@ -660,13 +640,7 @@ fn main(in: VertexInput) -> VertexOutput {
     let projected_extrude = matrix * vec4<f32>(extrude_vec, 0.0, 0.0);
     let base = matrix * vec4<f32>(pos, 0.0, 1.0);
     let clip = base + projected_extrude;
-    let inv_w = 1.0 / clip.w;
-    let ndc_z = (clip.z * inv_w) * 0.5 + 0.5;
-
-    out.position = vec4<f32>(clip.x * inv_w,
-                             clip.y * inv_w,
-                             ndc_z,
-                             1.0);
+    out.position = clip;
 
     let extrude_length_without_perspective = length(dist);
     let extrude_length_with_perspective = length((projected_extrude.xy / clip.w) * paintParams.units_to_pixels);

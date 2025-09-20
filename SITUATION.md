@@ -25,6 +25,7 @@ cmake --build build --target mbgl-glfw -- -j8
 ```
 - `run_webgpu.sh` now requests the WebGPU backend explicitly (`--backend webgpu`) and only applies the Metal debug env vars on macOS.
 - A 20s soak on Linux via `timeout 20 ./run_webgpu.sh` brings up the GLFW window on X11/XWayland, logs the selected Dawn adapter, and repeatedly renders the MapLibre demo tiles without validation errors.
+- Smoke tested the WGSL position fix with `timeout 6 ./build/platform/glfw/mbgl-glfw --backend webgpu --style https://demotiles.maplibre.org/style.json --zoom 4`; Dawn no longer reports scissor errors and the window renders continuously during the timeout window.
 - Expect the CLI to print the Dawn adapter scan and a "Successfully started" banner once `mbgl-glfw` survives the startup grace period.
 
 ## Performance notes (2025-09-20)
@@ -41,6 +42,7 @@ cmake --build build --target mbgl-glfw -- -j8
 - Maintain the swapchain `viewFormats` storage inside the GLFW backend so Dawn sees a stable pointer across reconfigurations, and lock the Metal layer to sRGB color space to avoid color-management surprises.
 - WebGPU drawables once again honour the layer-provided colour mask: the WebGPU-specific `Drawable::setColorMode` now forwards to the base implementation instead of discarding the request, so blend/state configuration matches Metal/Vulkan and fragments actually land in the swapchain.
 - Shader programs now derive their color attachment format from the backend rather than assuming `BGRA8Unorm`, preventing the swapchain/pipeline mismatch that produced black frames on adapters that default to sRGB outputs.
+- Updated the WebGPU WGSL vertex shaders (fill, background, line) to forward the full clip-space vector returned by the tile matrix (preserving the homogeneous `w`) instead of writing pre-divided NDC coordinates, bringing them in line with the Vulkan/Metal code paths and eliminating tile drift when panning/zooming.
 - Deduplicated WGSL helper definitions so every shader now pulls shared math/unpack routines from the Prelude; Dawn no longer reports redeclaration errors.
 - Corrected the fill-outline WGSL inputs to use `outline_color`/`outline_color_t`, fixing the "struct member not found" errors emitted by Dawn.
 - Retain swapchain and depth-stencil views by calling `wgpuTextureViewAddRef` before wrapping them; this prevents use-after-free when the render pass grabs the current surface texture.
