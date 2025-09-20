@@ -88,6 +88,23 @@ void UniformBuffer::update(const void* data, std::size_t dataSize) {
 
 // UniformBufferArray implementation
 
+const std::shared_ptr<gfx::UniformBuffer>& UniformBufferArray::set(
+    const size_t id, std::shared_ptr<gfx::UniformBuffer> uniformBuffer) {
+    if (dirtyFlag && uniformBufferVector[id] != uniformBuffer) {
+        *dirtyFlag = true;
+    }
+    return gfx::UniformBufferArray::set(id, std::move(uniformBuffer));
+}
+
+void UniformBufferArray::createOrUpdate(
+    const size_t id, const void* data, std::size_t size, gfx::Context& context, bool persistent) {
+    const auto* previous = uniformBufferVector[id].get();
+    gfx::UniformBufferArray::createOrUpdate(id, data, size, context, persistent);
+    if (dirtyFlag && uniformBufferVector[id].get() != previous) {
+        *dirtyFlag = true;
+    }
+}
+
 void UniformBufferArray::bind(gfx::RenderPass& renderPass) {
     // Note: In WebGPU, uniform buffers are bound through bind groups
     // which are created at the drawable level with the pipeline.

@@ -1,0 +1,806 @@
+[INFO] {mbgl-glfw}[Render]: GLFW window visible: 1
+[INFO] {mbgl-glfw}[Render]: Initializing Dawn WebGPU backend...
+[INFO] {mbgl-glfw}[Render]: Dawn instance created successfully
+Warning: maxDynamicUniformBuffersPerPipelineLayout artificially reduced from 32 to 16 to fit dynamic offset allocation limit.
+Warning: maxDynamicStorageBuffersPerPipelineLayout artificially reduced from 32 to 16 to fit dynamic offset allocation limit.
+Warning: maxDynamicUniformBuffersPerPipelineLayout artificially reduced from 500000 to 16 to fit dynamic offset allocation limit.
+Warning: maxDynamicStorageBuffersPerPipelineLayout artificially reduced from 500000 to 16 to fit dynamic offset allocation limit.
+[INFO] {mbgl-glfw}[Render]: Found 3 Dawn adapters
+[INFO] {mbgl-glfw}[Render]: Using Dawn WebGPU implementation with native backend
+[INFO] {mbgl-glfw}[Render]: Selected Dawn adapter for WebGPU rendering
+[INFO] {mbgl-glfw}[Render]: Creating Dawn WebGPU device...
+[INFO] {mbgl-glfw}[Render]: Dawn WebGPU device created successfully
+[INFO] {mbgl-glfw}[Render]: Window size: 1024x768
+[INFO] {mbgl-glfw}[Render]: Creating surface for WebGPU...
+[INFO] {mbgl-glfw}[Render]: Using X11 surface (may be through XWayland)
+[INFO] {mbgl-glfw}[Render]: Dawn WebGPU X11 surface created
+[INFO] {mbgl-glfw}[Render]: WebGPU: selected surface format BGRA8Unorm
+[INFO] {mbgl-glfw}[Render]: Dawn WebGPU surface configured successfully
+
+================================================================================
+
+- Press `S` to cycle through bundled styles
+- Press `X` to reset the transform
+- Press `N` to reset north
+- Press `R` to enable the route demo
+- Press `E` to insert an example building extrusion layer
+- Press `O` to toggle online connectivity
+- Press `Z` to cycle through north orientations
+- Press `X` to cycle through the viewport modes
+- Press `I` to delete existing database and re-initialize
+- Press `A` to cycle through Mapbox offices in the world + dateline monument
+- Press `B` to cycle through the color, stencil, and depth buffer
+- Press `D` to cycle through camera bounds: inside, crossing IDL at left, crossing IDL at right, and disabled
+- Press `T` to add custom geometry source
+- Press `F` to enable feature-state demo
+- Press `U` to toggle pitch bounds
+- Press `H` to take a snapshot of a current map.
+- Press `J` to take a snapshot of a current map with an extrusions overlay.
+- Press `Y` to start a camera fly-by demo
+
+- Press `1` through `6` to add increasing numbers of point annotations for testing
+- Press `7` through `0` to add increasing numbers of shape annotations for testing
+
+- Press `Q` to query annotations
+- Press `C` to remove annotations
+- Press `K` to add a random custom runtime imagery annotation
+- Press `L` to add a random line annotation
+- Press `W` to pop the last-added annotation off
+- Press `V` to toggle custom drawable layer
+- Press `B` to toggle rendering stats
+- Press `P` to pause tile requests
+
+- Hold `Control` + mouse drag to rotate
+- Hold `Shift` + mouse drag to tilt
+
+- Press `F1` to generate a render test for the current view
+
+- Press `Tab` to cycle through the map debug options
+- Press `F6` to cycle through Tile LOD modes
+- Press `F7` to lower the zoom level without changing the camera
+- Press `F8` to higher the zoom level without changing the camera
+- Press `Esc` to quit
+
+================================================================================
+
+[INFO] {mbgl-glfw}[Render]: TransformParameters: projMatrix[15]=1152.000000 projMatrix[11]=-0.000728 size=1024x768 scale=32.000000
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'BackgroundShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'BackgroundPatternShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'CircleShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'ClippingMaskProgram'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'CollisionBoxShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'CollisionCircleShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'CustomGeometryShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'CustomSymbolIconShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'DebugShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillOutlineShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillPatternShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillOutlinePatternShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillOutlineTriangulatedShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillExtrusionShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'FillExtrusionPatternShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'HeatmapShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'HeatmapTextureShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'HillshadeShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'HillshadePrepareShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LineShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LineGradientShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LinePatternShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LineSDFShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LocationIndicatorShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'LocationIndicatorTexturedShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'RasterShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'SymbolIconShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'SymbolSDFShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'SymbolTextAndIconShader'
+[INFO] {mbgl-glfw}[Shader]: WebGPU: Registered shader group for 'WideVectorShader'
+[INFO] {mbgl-glfw}[Style]: Style 'MapLibre' has 9 layers:
+  None: 7
+  Zoom: 2
+
+[INFO] {mbgl-glfw}[Render]: TransformParameters: projMatrix[15]=1152.000000 projMatrix[11]=-0.000728 size=1024x768 scale=32.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for crimea needsRendering=1 needsRelayout=1 zoomRange=[0,18] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 0 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=null cachedTileset=null
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update returning early - no cachedTileset
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for org.maplibre.annotations needsRendering=1 needsRelayout=1 zoomRange=[0,16] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 0 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for coastline with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for countries-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for countries-boundary with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for geolines with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for crimea-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: background
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer::update called for countries-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer::update called for crimea-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for background with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After matrixFor, matrix[15]=1.000000
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After projection multiply, matrix[15]=1152.000000
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After matrixFor, matrix[15]=1.000000
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After projection multiply, matrix[15]=1152.000000
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After matrixFor, matrix[15]=1.000000
+[INFO] {mbgl-glfw}[Render]: getTileMatrix: After projection multiply, matrix[15]=1152.000000
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: TransformParameters: projMatrix[15]=1152.000000 projMatrix[11]=-0.000728 size=1024x768 scale=32.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for crimea needsRendering=1 needsRelayout=0 zoomRange=[0,18] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 0 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=null
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for maplibre needsRendering=1 needsRelayout=0 zoomRange=[0,6] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 0 rendered tiles, 7 total tiles
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for org.maplibre.annotations needsRendering=1 needsRelayout=0 zoomRange=[0,16] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 6 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for coastline with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for countries-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for countries-boundary with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for geolines with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderLayer::prepare called for crimea-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer::update called for countries-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer::update called for crimea-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: org.maplibre.annotations.points
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for background with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for org.maplibre.annotations.points with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for crimea needsRendering=1 needsRelayout=0 zoomRange=[0,18] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 6 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for maplibre needsRendering=1 needsRelayout=0 zoomRange=[0,6] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 0 rendered tiles, 12 total tiles
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for org.maplibre.annotations needsRendering=1 needsRelayout=0 zoomRange=[0,16] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 6 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer::update called for countries-fill with 0 tiles
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: crimea-fill
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer: Added FillLayerTweaker to crimea-fill
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for background with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for crimea-fill with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for crimea-fill with 0 drawables
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for org.maplibre.annotations.points with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for crimea needsRendering=1 needsRelayout=0 zoomRange=[0,18] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update calculated 6 ideal tiles at zoom 5/5
+[INFO] {mbgl-glfw}[Render]:   First tile: 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update finished with 6 rendered tiles, 6 total tiles
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: TilePyramid::update called for maplibre needsRendering=1 needsRelayout=0 zoomRange=[0,6] currentZoom=5.000000
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: coastline
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: countries-fill
+[INFO] {mbgl-glfw}[Render]: RenderFillLayer: Added FillLayerTweaker to countries-fill
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 1
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/7/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 2
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/8/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 3
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/8/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 4
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/8/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 5
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/8/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 6
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: countries-boundary
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: geolines
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: geolines-label
+[INFO] {mbgl-glfw}[Render]: WebGPU: Creating TileLayerGroup: countries-label
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for background with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for coastline with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/7/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/8/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/8/10+0
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for countries-fill with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for countries-fill with 6 drawables
+[INFO] {mbgl-glfw}[Render]: LayerGroupBase::runTweakers called for countries-boundary with 1 tweakers
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/7/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/8/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.140625, -0.187500, tile=5/8/10+0
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for crimea-fill with 0 drawables
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 3 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bind group order: [0]
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 0/0/0=>0
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 7
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 0/0/0=>0
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 8
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/6/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 9
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/6/9=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 10
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/6/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 11
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/6/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 12
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.154503, -0.206004, tile=5/7/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.154503, -0.206004, tile=5/8/9+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=0.154503, -0.206004, tile=5/8/10+0
+[INFO] {mbgl-glfw}[Render]: LineLayerTweaker simple matrix diag=4.944095, -6.592126, tile=0/0/0+0
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for countries-fill with 12 drawables
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for crimea-fill with 0 drawables
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 6 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=67674 uboIndex=7 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=9 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=11 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Creating pipeline with color mask R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=67674 uboIndex=7 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=9 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=11 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=0/0/0=>0
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/7/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 13
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 5/7/10=>5
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 14
+[INFO] {mbgl-glfw}[Render]: WGSL vertex snippet for ContextShader
+
+// Constants
+const PI: f32 = 3.14159265358979323846;
+const LINE_NORMAL_SCALE: f32 = 1.0 / 63.5;  // 1.0 / (127 / 2)
+const MAX_LINE_DISTANCE: f32 = 32767.0;
+const SDF_PX: f32 = 8.0;
+
+// Helper functio
+[INFO] {mbgl-glfw}[Render]: Successfully created vertex shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: Successfully created fragment shader module for ContextShader
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for countries-fill with 12 drawables
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for crimea-fill with 0 drawables
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 6 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=2056 uboIndex=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=2056 uboIndex=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for countries-fill with 12 drawables
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for crimea-fill with 0 drawables
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 6 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=2056 uboIndex=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Unique vertex buffer bindings: 3
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=244 uboIndex=9 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=2056 uboIndex=11 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=5/6/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/7/10=>5
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 1/0/0=>1
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 15
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 1/0/0=>1
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 16
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 4/3/5=>4
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 17
+[INFO] {mbgl-glfw}[Render]: Got 1 drawables from builder
+[INFO] {mbgl-glfw}[Render]: Drawable color mask before storing countries-fill/fill-outline: R=1 G=1 B=1 A=1
+[INFO] {mbgl-glfw}[Render]:   Adding drawable to layer group for tile 4/3/5=>4
+[INFO] {mbgl-glfw}[Render]:   Total drawables added: 18
+[INFO] {mbgl-glfw}[Render]: FillLayerTweaker::execute called for countries-fill with 12 drawables
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 6 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=46720 uboIndex=9 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1732 uboIndex=11 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1146 uboIndex=1 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=3 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=5 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=200 uboIndex=7 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=9 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=46720 uboIndex=9 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=11 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1732 uboIndex=11 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/7/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/6/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=4 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: RenderTileSetSource::update called for maplibre needsRendering=1 tileset=present cachedTileset=present
+[INFO] {mbgl-glfw}[Render]: WebGPU: Rendering 4 clipping masks for tiles
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=3 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=46720 uboIndex=5 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1732 uboIndex=7 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1822 uboIndex=1 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=3196 uboIndex=3 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=5 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=46720 uboIndex=5 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Fill-outline bindings for group 0: (binding=1, type=0)(binding=2, type=1)(binding=5, type=0)
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=7 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Fill-outline SetBindGroup slot=0 group=0
+[INFO] {mbgl-glfw}[Render]: Fill-outline draw segment indices=1732 uboIndex=7 tile=4/3/5=>4
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=0 tile=5/8/9=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=1 tile=5/8/10=>5
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=2 tile=1/0/0=>1
+[INFO] {mbgl-glfw}[Render]: Line draw bind global index=3 tile=4/3/5=>4

@@ -18,6 +18,7 @@
 #include <mbgl/webgpu/index_buffer_resource.hpp>
 #include <mbgl/webgpu/render_pass.hpp>
 #include <mbgl/webgpu/renderer_backend.hpp>
+#include <mbgl/webgpu/logging.hpp>
 #include <mbgl/webgpu/texture2d.hpp>
 #include <mbgl/webgpu/uniform_buffer.hpp>
 #include <mbgl/webgpu/upload_pass.hpp>
@@ -137,7 +138,9 @@ struct IndexBuffer : public gfx::IndexBufferBase {
 
 Drawable::Drawable(std::string name_)
     : gfx::Drawable(std::move(name_)),
-      impl(std::make_unique<Impl>()) {}
+      impl(std::make_unique<Impl>()) {
+    impl->uniformBuffers.setDirtyObserver(&impl->bindGroupsDirty);
+}
 
 Drawable::~Drawable() {
     // Clean up WebGPU resources safely
@@ -195,6 +198,30 @@ void Drawable::setColorMode(const gfx::ColorMode& value) {
     impl->pipelineState = nullptr;  // Rebuild pipeline to honour new color mode
 }
 
+void Drawable::setTexture(gfx::Texture2DPtr texture, size_t id) {
+    const auto& existing = gfx::Drawable::getTexture(id);
+    if (existing.get() != texture.get()) {
+        impl->bindGroupsDirty = true;
+    }
+    gfx::Drawable::setTexture(std::move(texture), id);
+}
+
+void Drawable::setTextures(const gfx::Drawable::Textures& textures_) noexcept {
+    impl->bindGroupsDirty = true;
+    gfx::Drawable::setTextures(textures_);
+}
+
+void Drawable::setTextures(gfx::Drawable::Textures&& textures_) noexcept {
+    impl->bindGroupsDirty = true;
+    gfx::Drawable::setTextures(std::move(textures_));
+}
+
+void Drawable::markBindGroupsDirty() {
+    if (!impl->bindGroupsDirty) {
+        impl->bindGroupsDirty = true;
+    }
+}
+
 void Drawable::setEnableStencil(bool value) {
     if (getEnableStencil() == value) {
         return;
@@ -227,11 +254,13 @@ void Drawable::setDepthType(gfx::DepthMaskType value) {
 }
 
 void Drawable::setShader(gfx::ShaderProgramBasePtr value) {
-    if (shader == value) {
+    const auto current = getShader();
+    if (current.get() == value.get()) {
         return;
     }
-    shader = std::move(value);
+    gfx::Drawable::setShader(std::move(value));
     impl->pipelineState = nullptr;  // Reset pipeline when shader changes
+    impl->bindGroupsDirty = true;
 }
 
 void Drawable::upload(gfx::UploadPass& uploadPass) {
@@ -448,17 +477,25 @@ void Drawable::draw(PaintParameters& parameters) const {
         if (webgpuShader) {
             WGPUDevice deviceHandle = static_cast<WGPUDevice>(backend.getDevice());
 
-            for (auto& record : impl->bindGroups) {
-                if (record.handle) {
-                    wgpuBindGroupRelease(record.handle);
-                }
+            if (impl->cachedTexturesValid && impl->cachedTextures != textures) {
+                impl->bindGroupsDirty = true;
             }
-            impl->bindGroups.clear();
 
-            if (deviceHandle) {
+            const bool rebuildBindGroups = impl->bindGroupsDirty || impl->bindGroups.empty();
+            if (rebuildBindGroups) {
+                for (auto& record : impl->bindGroups) {
+                    if (record.handle) {
+                        wgpuBindGroupRelease(record.handle);
+                    }
+                }
+                impl->bindGroups.clear();
+            }
+
+            if (deviceHandle && rebuildBindGroups) {
                 const auto& groupOrder = webgpuShader->getBindGroupOrder();
                 static bool loggedBindGroupOrder = false;
-                if (!loggedBindGroupOrder && getName().find("fill-outline") != std::string::npos) {
+                if (webgpu::isVerboseLoggingEnabled() && !loggedBindGroupOrder &&
+                    getName().find("fill-outline") != std::string::npos) {
                     std::string orderStr;
                     for (size_t idx = 0; idx < groupOrder.size(); ++idx) {
                         orderStr += std::to_string(groupOrder[idx]);
@@ -496,7 +533,8 @@ void Drawable::draw(PaintParameters& parameters) const {
                     }
 
                     const auto& bindingInfos = webgpuShader->getBindingInfosForGroup(group);
-                    if (getName().find("fill-outline") != std::string::npos) {
+                    if (webgpu::isVerboseLoggingEnabled() &&
+                        getName().find("fill-outline") != std::string::npos) {
                         std::string infoStr;
                         for (const auto& info : bindingInfos) {
                             infoStr += "(binding=" + std::to_string(info.binding) + ", type=" +
@@ -529,7 +567,8 @@ void Drawable::draw(PaintParameters& parameters) const {
                                         impl->uniformBuffers.set(bindingInfo.binding, impl->uboIndexUniform);
                                         buffer = impl->uboIndexUniform;
                                         static int lineLogCount = 0;
-                                        if (lineLogCount < 128 && getName().find("line") != std::string::npos) {
+                                        if (webgpu::isVerboseLoggingEnabled() && lineLogCount < 128 &&
+                                            getName().find("line") != std::string::npos) {
                                             const auto& dbgTile = getTileID();
                                             Log::Info(Event::Render,
                                                       "Line draw bind global index=" +
@@ -630,6 +669,10 @@ void Drawable::draw(PaintParameters& parameters) const {
                     WGPUBindGroup bindGroup = wgpuDeviceCreateBindGroup(deviceHandle, &descriptor);
                     impl->bindGroups.push_back({static_cast<uint32_t>(slot), group, bindGroup});
                 }
+
+                impl->bindGroupsDirty = false;
+                impl->cachedTextures = textures;
+                impl->cachedTexturesValid = true;
             }
         }
     }
@@ -767,7 +810,7 @@ void Drawable::draw(PaintParameters& parameters) const {
         // Get render pipeline similar to Metal's getRenderPipelineState
         // Use the actual color mode from the drawable (like Metal does)
         const auto& colorMode = getColorMode();
-        if (drawCallCount <= 100) {
+        if (webgpu::isVerboseLoggingEnabled() && drawCallCount <= 100) {
             Log::Info(Event::Render,
                       "Creating pipeline with color mask R=" + std::to_string(colorMode.mask.r) +
                           " G=" + std::to_string(colorMode.mask.g) +
@@ -821,7 +864,8 @@ void Drawable::draw(PaintParameters& parameters) const {
 
 
     // Bind vertex buffers from the consolidated list
-    if (drawCallCount <= 200 && getName().find("fill") != std::string::npos) {
+    if (webgpu::isVerboseLoggingEnabled() && drawCallCount <= 200 &&
+        getName().find("fill") != std::string::npos) {
         Log::Info(Event::Render, "Unique vertex buffer bindings: " + std::to_string(uniqueBindings.size()));
     }
 
@@ -884,7 +928,8 @@ void Drawable::draw(PaintParameters& parameters) const {
     // Set bind group
     for (const auto& record : impl->bindGroups) {
         if (record.handle) {
-            if (getName().find("fill-outline") != std::string::npos && drawCallCount <= 400) {
+            if (webgpu::isVerboseLoggingEnabled() &&
+                getName().find("fill-outline") != std::string::npos && drawCallCount <= 400) {
                 Log::Info(Event::Render,
                           "Fill-outline SetBindGroup slot=" + std::to_string(record.slot) +
                               " group=" + std::to_string(record.group));
@@ -920,7 +965,8 @@ void Drawable::draw(PaintParameters& parameters) const {
             const int32_t baseVertex = static_cast<int32_t>(mlSegment.vertexOffset);
             const uint32_t baseInstance = 0;
 
-            if (getName().find("fill-outline") != std::string::npos && drawCallCount <= 400) {
+            if (webgpu::isVerboseLoggingEnabled() &&
+                getName().find("fill-outline") != std::string::npos && drawCallCount <= 400) {
                 Log::Info(Event::Render,
                           "Fill-outline draw segment indices=" + std::to_string(mlSegment.indexLength) +
                               " uboIndex=" + std::to_string(getUBOIndex()) +

@@ -47,6 +47,16 @@ public:
         return *this;
     }
 
+    void setDirtyObserver(bool* flag) { dirtyFlag = flag; }
+
+    const std::shared_ptr<gfx::UniformBuffer>& set(const size_t id,
+                                                   std::shared_ptr<gfx::UniformBuffer> uniformBuffer) override;
+    void createOrUpdate(const size_t id,
+                        const void* data,
+                        std::size_t size,
+                        gfx::Context& context,
+                        bool persistent = false) override;
+
     void bindWebgpu(RenderPass&) const noexcept;
     void bind(gfx::RenderPass& renderPass) override;
 
@@ -54,6 +64,8 @@ private:
     gfx::UniqueUniformBuffer copy(const gfx::UniformBuffer& buffer) override {
         return std::make_unique<UniformBuffer>(static_cast<const UniformBuffer&>(buffer).clone());
     }
+
+    bool* dirtyFlag = nullptr;
 };
 
 } // namespace webgpu

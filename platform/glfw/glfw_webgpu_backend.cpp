@@ -558,12 +558,6 @@ void GLFWWebGPUBackend::swap() {
     // Note: Command buffer is already submitted in CommandEncoder::present()
     // before swap() is called, so we don't need to submit it again here.
 
-    // Wait for any previous frame to complete with longer timeout
-    if (!waitForFrame(std::chrono::milliseconds(500))) {
-        // Timeout - force frame completion
-        signalFrameComplete();
-    }
-
     // Present the current frame
     if (wgpuSurface && surfaceConfigured) {
         // Check if surface needs reconfiguration

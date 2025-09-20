@@ -70,6 +70,9 @@ public:
         WGPUBindGroup handle = nullptr;
     };
     std::vector<BindGroupRecord> bindGroups;
+    bool bindGroupsDirty = true;
+    gfx::Drawable::Textures cachedTextures{};
+    bool cachedTexturesValid = false;
 };
 
 // WebGPU-specific DrawSegment inheriting from the base gfx::Drawable::DrawSegment

@@ -25,6 +25,8 @@
 #include <mbgl/util/hash.hpp>
 #include <mbgl/util/logging.hpp>
 
+#include <mbgl/webgpu/logging.hpp>
+
 #include <mbgl/shaders/attributes.hpp>
 #include <mbgl/shaders/webgpu/clipping_mask.hpp>
 #include <mbgl/shaders/webgpu/shader_program.hpp>
@@ -107,13 +109,17 @@ gfx::ShaderProgramBasePtr Context::getGenericShader(gfx::ShaderRegistry& registr
 }
 
 TileLayerGroupPtr Context::createTileLayerGroup(int32_t layerIndex, std::size_t initialCapacity, std::string name) {
-    mbgl::Log::Info(mbgl::Event::Render, "WebGPU: Creating TileLayerGroup: " + name);
+    if (webgpu::isVerboseLoggingEnabled()) {
+        mbgl::Log::Info(mbgl::Event::Render, "WebGPU: Creating TileLayerGroup: " + name);
+    }
     auto tileLayerGroup = std::make_shared<webgpu::TileLayerGroup>(layerIndex, initialCapacity, std::move(name));
     return tileLayerGroup;
 }
 
 LayerGroupPtr Context::createLayerGroup(int32_t layerIndex, std::size_t initialCapacity, std::string name) {
-    mbgl::Log::Info(mbgl::Event::Render, "WebGPU: Creating LayerGroup: " + name);
+    if (webgpu::isVerboseLoggingEnabled()) {
+        mbgl::Log::Info(mbgl::Event::Render, "WebGPU: Creating LayerGroup: " + name);
+    }
     auto layerGroup = std::make_shared<webgpu::LayerGroup>(layerIndex, initialCapacity, std::move(name));
     return layerGroup;
 }
@@ -237,8 +243,10 @@ bool Context::renderTileClippingMasks(gfx::RenderPass& renderPass,
         return false;
     }
 
-    Log::Info(Event::Render,
-              "WebGPU: Rendering " + std::to_string(tileUBOs.size()) + " clipping masks for tiles");
+    if (webgpu::isVerboseLoggingEnabled()) {
+        Log::Info(Event::Render,
+                  "WebGPU: Rendering " + std::to_string(tileUBOs.size()) + " clipping masks for tiles");
+    }
 
     if (!clipMaskShader) {
         if (auto group = staticData.shaders->getShaderGroup(ShaderClass::name)) {
@@ -451,12 +459,15 @@ gfx::AttributeBindingArray Context::getOrCreateVertexBindings(
             // Create vertex buffer from the shared data
             const auto dataSize = sharedRaw->getRawSize() * sharedRaw->getRawCount();
             if (dataSize > 0) {
-                // Log first few vertices for debugging
-                const int16_t* rawVerts = reinterpret_cast<const int16_t*>(sharedRaw->getRawData());
-                if (rawVerts && dataSize >= 8) {
-                    mbgl::Log::Info(mbgl::Event::Render, "First vertex data: [" +
-                                   std::to_string(rawVerts[0]) + ", " + std::to_string(rawVerts[1]) +
-                                   ", " + std::to_string(rawVerts[2]) + ", " + std::to_string(rawVerts[3]) + "]");
+                if (webgpu::isVerboseLoggingEnabled()) {
+                    // Log first few vertices for debugging
+                    const int16_t* rawVerts = reinterpret_cast<const int16_t*>(sharedRaw->getRawData());
+                    if (rawVerts && dataSize >= 8) {
+                        mbgl::Log::Info(mbgl::Event::Render,
+                                        "First vertex data: [" + std::to_string(rawVerts[0]) + ", " +
+                                            std::to_string(rawVerts[1]) + ", " + std::to_string(rawVerts[2]) +
+                                            ", " + std::to_string(rawVerts[3]) + "]");
+                    }
                 }
 
                 // Create GPU buffer for this vertex attribute
@@ -473,9 +484,12 @@ gfx::AttributeBindingArray Context::getOrCreateVertexBindings(
                     /*.vertexOffset = */ 0
                 };
 
-                mbgl::Log::Info(mbgl::Event::Render, "Created vertex buffer for attribute " +
-                               std::to_string(index) + " size=" + std::to_string(dataSize) +
-                               " stride=" + std::to_string(attr.getStride()));
+                if (webgpu::isVerboseLoggingEnabled()) {
+                    mbgl::Log::Info(mbgl::Event::Render,
+                                    "Created vertex buffer for attribute " + std::to_string(index) +
+                                        " size=" + std::to_string(dataSize) +
+                                        " stride=" + std::to_string(attr.getStride()));
+                }
             }
         }
     });

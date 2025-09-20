@@ -27,6 +27,11 @@ cmake --build build --target mbgl-glfw -- -j8
 - A 20s soak on Linux via `timeout 20 ./run_webgpu.sh` brings up the GLFW window on X11/XWayland, logs the selected Dawn adapter, and repeatedly renders the MapLibre demo tiles without validation errors.
 - Expect the CLI to print the Dawn adapter scan and a "Successfully started" banner once `mbgl-glfw` survives the startup grace period.
 
+## Performance notes (2025-09-20)
+- Added `include/mbgl/webgpu/logging.hpp` and gated the high-volume WebGPU traces behind `MLN_WEBGPU_TRACE`; default runs no longer spam per-draw diagnostics (`src/mbgl/webgpu/context.cpp:111`, `src/mbgl/webgpu/drawable.cpp:462`, `src/mbgl/webgpu/renderer_backend.cpp:83`).
+- Re-running `timeout 10 ./run_webgpu.sh` now yields only startup telemetry, keeping stdout quiet for the steady-state render loop.
+- Spot-checking CPU usage with `timeout 10 bash -lc './build/platform/glfw/mbgl-glfw --backend webgpu --style https://demotiles.maplibre.org/style.json --zoom 5 & pid=$!; sleep 4; ps -p $pid -o %cpu,%mem,cmd; wait $pid'` reports ~12–13% CPU on the lab Linux host. Re-enabling verbose tracing via `MLN_WEBGPU_TRACE=1` reproduces the previous flood without affecting the fast path.
+
 ## Recent WebGPU fixes (2025-09-19)
 - Consolidated vertex attribute bindings so a drawable never binds more than eight unique WebGPU vertex buffers; Dawn no longer complains about exceeding the limit, and the fill layer now reuses shared buffers instead of allocating duplicates per attribute.
 - Uniform buffers are allocated with 256-byte alignment before upload, satisfying Dawn's minimum binding size (the global index UBO now binds as 256 bytes instead of 16).
@@ -62,6 +67,13 @@ cmake --build build --target mbgl-glfw -- -j8
 - `webgpu::Texture2D::upload()` and `uploadSubRegion()` now pad rows into a 256-byte-aligned staging buffer before calling Dawn. The helper copies the glyph data into the padded span and zero-fills the slack, restoring the expected SDF gradients.
 - Vulkan glyph textures now swizzle the red source channel into both `.r` and `.a`, so the existing `.a` sampling paths continue to work after the GL_ALPHA→GL_R8 switch. (The shader changes were kept aligned with WebGPU.)
 - Rebuilt and ran `./run_webgpu.sh` after the change; the GLFW sample still renders the MapLibre demo tiles. Dawn prints no copy-stride validation errors and labels regain smooth alpha.
+
+## Performance regression (2025-09-21)
+- Running the GLFW demo with WebGPU (`timeout 15 ./build/platform/glfw/mbgl-glfw --backend webgpu --style https://demotiles.maplibre.org/style.json --benchmark`) still produces a visible map, but the window updates only every ~0.5 s while the Vulkan/Metal backends animate smoothly.
+- Inspecting the backend shows `GLFWWebGPUBackend::swap()` waits up to 500 ms by calling `waitForFrame(std::chrono::milliseconds(500))` before presenting (`platform/glfw/glfw_webgpu_backend.cpp:562`).
+- The `frameInProgress` latch the wait loop looks at is set to `true` when the surface texture is acquired (`platform/glfw/glfw_webgpu_backend.cpp:681`) and is only cleared by `signalFrameComplete()` at the very end of `swap()` (`platform/glfw/glfw_webgpu_backend.cpp:597`). Because the wait happens before `signalFrameComplete()`, the loop always burns through the full 500 ms timeout on every frame.
+- This extra half-second delay is unique to WebGPU; the Vulkan and Metal backends present immediately after swapping, so they achieve normal frame rates. Removing the pre-present wait (or only running it when the previous frame is still outstanding before the next acquire) should let WebGPU match the other backends’ throughput.
+- Removed the blocking wait by deleting the `waitForFrame(std::chrono::milliseconds(500))` call inside `GLFWWebGPUBackend::swap()`; the backend now presents immediately and marks the frame complete afterwards. Rebuilt (`cmake --build ./build --target mbgl-glfw -- -j8`) and re-ran `timeout 8 ./build/platform/glfw/mbgl-glfw --backend webgpu --style https://demotiles.maplibre.org/style.json --benchmark`; the log now updates every frame without the 500 ms pauses witnessed before.
 
 ## Observations
 - `./build/platform/glfw/mbgl-glfw --backend=webgpu --style=https://demotiles.maplibre.org/style.json` now reports `WebGPU: selected surface format BGRA8Unorm` and renders the MapLibre demo tiles correctly on macOS. The translucent/opaque passes log non-zero drawable counts, confirming geometry is making it through the pipeline.

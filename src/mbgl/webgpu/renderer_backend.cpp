@@ -5,6 +5,7 @@
 #include <mbgl/shaders/shader_source.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/size.hpp>
+#include <mbgl/webgpu/logging.hpp>
 
 // Include shader group and individual shader headers
 #include <mbgl/shaders/webgpu/shader_group.hpp>
@@ -79,7 +80,10 @@ void registerTypes(gfx::ShaderRegistry& registry, const ProgramParameters& progr
             assert(!"duplicate shader group");
             throw std::runtime_error("Failed to register "s + ShaderClass::name + " with shader registry!");
         } else {
-            mbgl::Log::Info(mbgl::Event::Shader, "WebGPU: Registered shader group for '" + std::string(ShaderClass::name) + "'");
+            if (webgpu::isVerboseLoggingEnabled()) {
+                mbgl::Log::Info(mbgl::Event::Shader,
+                                "WebGPU: Registered shader group for '" + std::string(ShaderClass::name) + "'");
+            }
         }
     }(), ...);
 }

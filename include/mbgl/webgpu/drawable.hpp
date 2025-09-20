@@ -40,6 +40,14 @@ public:
 
     void setShader(gfx::ShaderProgramBasePtr) override;
 
+    using gfx::Drawable::setTexture;
+    using gfx::Drawable::setTextures;
+    void setTexture(gfx::Texture2DPtr texture, size_t id);
+    void setTextures(const gfx::Drawable::Textures& textures_) noexcept;
+    void setTextures(gfx::Drawable::Textures&& textures_) noexcept;
+
+    void markBindGroupsDirty();
+
     void setEnableStencil(bool) override;
     void setEnableDepth(bool) override;
     void setSubLayerIndex(int32_t) override;
