@@ -40,7 +40,8 @@ fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     
     let scaled_pos = vec2<f32>(f32(in.position.x), f32(in.position.y)) * debug.overlay_scale;
-    out.position = debug.matrix * vec4<f32>(scaled_pos, 0.0, 1.0);
+    let clip = debug.matrix * vec4<f32>(scaled_pos, 0.0, 1.0);
+    out.position = encode_clip(clip);
     
     // This vertex shader expects a EXTENT x EXTENT quad,
     // The UV co-ordinates for the overlay texture can be calculated using that knowledge

@@ -79,7 +79,8 @@ fn main(in: VertexInput) -> VertexOutput {
     
     let pos = vec3<f32>(f32(in.position.x), f32(in.position.y), t);
     
-    out.position = drawable.matrix * vec4<f32>(pos, 1.0);
+    let clip = drawable.matrix * vec4<f32>(pos, 1.0);
+    out.position = encode_clip(clip);
     
     // Calculate lighting
     let light_position = props.light_position_base.xyz;
@@ -210,7 +211,8 @@ fn main(in: VertexInput) -> VertexOutput {
     let t = mod(normal.x, 2.0);
     let z = select(base, height, t != 0.0);
 
-    let position = drawable.matrix * vec4<f32>(vec2<f32>(f32(in.position.x), f32(in.position.y)), z, 1.0);
+    let clip = drawable.matrix * vec4<f32>(vec2<f32>(f32(in.position.x), f32(in.position.y)), z, 1.0);
+    let position = encode_clip(clip);
 
     // Get pattern coordinates
     let pattern_from = vec4<f32>(in.pattern_from);

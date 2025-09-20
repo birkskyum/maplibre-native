@@ -88,7 +88,8 @@ fn main(in: VertexInput) -> VertexOutput {
     
     // Calculate final position
     let world_pos = circle_center + scaled_extrude * (radius + stroke_width);
-    out.position = drawable.matrix * vec4<f32>(world_pos, 0.0, 1.0);
+    let clip = drawable.matrix * vec4<f32>(world_pos, 0.0, 1.0);
+    out.position = encode_clip(clip);
     
     // Calculate antialiasing blur
     out.antialiasblur = 1.0 / (radius + stroke_width);

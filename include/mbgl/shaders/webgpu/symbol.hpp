@@ -188,7 +188,8 @@ fn main(in: VertexInput) -> VertexOutput {
     let projected_pos = drawable.label_plane_matrix * vec4<f32>(in.projected_pos.xy, 0.0, 1.0);
     let pos0 = projected_pos.xy / projected_pos.w;
     let posOffset = a_offset * max(a_minFontScale, vec2<f32>(fontScale)) / 32.0 + a_pxoffset / 16.0;
-    let position = drawable.coord_matrix * vec4<f32>(pos0 + rotation_matrix * posOffset, 0.0, 1.0);
+    let clip_position = drawable.coord_matrix * vec4<f32>(pos0 + rotation_matrix * posOffset, 0.0, 1.0);
+    let position = encode_clip(clip_position);
 
     out.position = position;
     out.tex = a_tex / drawable.texsize;
@@ -330,11 +331,12 @@ fn main(in: VertexInput) -> VertexOutput {
     let projected_pos = drawable.label_plane_matrix * vec4<f32>(in.projected_pos.xy, 0.0, 1.0);
     let pos_rot = a_offset / 32.0 * fontScale + a_pxoffset;
     let pos0 = projected_pos.xy / projected_pos.w + rotation_matrix * pos_rot;
-    let position = drawable.coord_matrix * vec4<f32>(pos0, 0.0, 1.0);
+    let clip_position = drawable.coord_matrix * vec4<f32>(pos0, 0.0, 1.0);
+    let position = encode_clip(clip_position);
 
     out.position = position;
     out.tex = a_tex / drawable.texsize;
-    out.gamma_scale = position.w;
+    out.gamma_scale = clip_position.w;
     out.fontScale = fontScale;
     out.fade_opacity = fo;
 
@@ -513,8 +515,9 @@ fn main(in: VertexInput) -> VertexOutput {
     let projected_pos = drawable.label_plane_matrix * vec4<f32>(in.projected_pos.xy, 0.0, 1.0);
     let pos_rot = a_offset / 32.0 * fontScale;
     let pos0 = projected_pos.xy / projected_pos.w + rotation_matrix * pos_rot;
-    let position = drawable.coord_matrix * vec4<f32>(pos0, 0.0, 1.0);
-    let gamma_scale = position.w;
+    let clip_position = drawable.coord_matrix * vec4<f32>(pos0, 0.0, 1.0);
+    let position = encode_clip(clip_position);
+    let gamma_scale = clip_position.w;
     let is_icon = select(1.0, 0.0, is_sdf == SDF);
 
     out.position = position;

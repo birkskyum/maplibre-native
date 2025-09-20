@@ -170,7 +170,7 @@ fn main(in: VertexInput) -> VertexOutput {
     let base = drawable.matrix * vec4<f32>(pos + offset2 / ratio, 0.0, 1.0);
     let clip = base + projected_extrude;
 
-    out.position = clip;
+    out.position = encode_clip(clip);
 
     let extrude_length_without_perspective = length(dist);
     let extrude_length_with_perspective =
@@ -381,12 +381,13 @@ fn main(in: VertexInput) -> VertexOutput {
     let offset2 = offset * a_extrude * LINE_NORMAL_SCALE * v_normal.y * mat2x2<f32>(t, -u, u, t);
 
     let projected_extrude = drawable.matrix * vec4<f32>(dist / drawable.ratio, 0.0, 0.0);
-    let position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
+    let clip_position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
 
     // Calculate gamma scale
     let extrude_length_without_perspective = length(dist);
-    let extrude_length_with_perspective = length(projected_extrude.xy / position.w * paintParams.units_to_pixels);
+    let extrude_length_with_perspective = length(projected_extrude.xy / clip_position.w * paintParams.units_to_pixels);
 
+    let position = encode_clip(clip_position);
     out.position = position;
     out.v_width2 = vec2<f32>(outset, inset);
     out.v_normal = v_normal;
@@ -600,12 +601,13 @@ fn main(in: VertexInput) -> VertexOutput {
     let offset2 = offset * a_extrude * LINE_NORMAL_SCALE * v_normal.y * mat2x2<f32>(t, -u, u, t);
 
     let projected_extrude = drawable.matrix * vec4<f32>(dist / drawable.ratio, 0.0, 0.0);
-    let position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
+    let clip_position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
 
     // Calculate gamma scale
     let extrude_length_without_perspective = length(dist);
-    let extrude_length_with_perspective = length(projected_extrude.xy / position.w * paintParams.units_to_pixels);
+    let extrude_length_with_perspective = length(projected_extrude.xy / clip_position.w * paintParams.units_to_pixels);
 
+    let position = encode_clip(clip_position);
     out.position = position;
     out.v_width2 = vec2<f32>(outset, inset);
     out.v_normal = v_normal;
@@ -870,11 +872,11 @@ fn main(in: VertexInput) -> VertexOutput {
     let offset2 = offset * a_extrude * LINE_NORMAL_SCALE * v_normal.y * mat2x2<f32>(t, -u, u, t);
 
     let projected_extrude = drawable.matrix * vec4<f32>(dist / drawable.ratio, 0.0, 0.0);
-    let position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
+    let clip_position = drawable.matrix * vec4<f32>(pos + offset2 / drawable.ratio, 0.0, 1.0) + projected_extrude;
 
     // Calculate gamma scale
     let extrude_length_without_perspective = length(dist);
-    let extrude_length_with_perspective = length(projected_extrude.xy / position.w * paintParams.units_to_pixels);
+    let extrude_length_with_perspective = length(projected_extrude.xy / clip_position.w * paintParams.units_to_pixels);
 
     // Calculate texture coordinates
     let tex_a = vec2<f32>(
@@ -886,6 +888,7 @@ fn main(in: VertexInput) -> VertexOutput {
         normal.y * drawable.patternscale_b.y + drawable.tex_y_b
     );
 
+    let position = encode_clip(clip_position);
     out.position = position;
     out.v_width2 = vec2<f32>(outset, inset);
     out.v_normal = v_normal;

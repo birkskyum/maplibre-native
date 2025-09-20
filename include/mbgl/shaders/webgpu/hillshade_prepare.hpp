@@ -37,7 +37,8 @@ struct HillshadePrepareUBO {
 @vertex
 fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
-    out.position = ubo.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
+    let clip = ubo.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
+    out.position = encode_clip(clip);
     out.tex_coord = vec2<f32>(f32(in.texcoord.x), f32(in.texcoord.y)) / 8192.0;
     return out;
 }

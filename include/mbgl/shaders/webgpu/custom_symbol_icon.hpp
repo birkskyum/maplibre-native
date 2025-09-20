@@ -35,7 +35,8 @@ struct SymbolUBO {
 @vertex
 fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
-    out.position = symbol_ubo.matrix * vec4<f32>(in.position, 1.0);
+    let clip = symbol_ubo.matrix * vec4<f32>(in.position, 1.0);
+    out.position = encode_clip(clip);
     out.uv = in.texcoord;
     return out;
 }

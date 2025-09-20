@@ -33,7 +33,8 @@ struct LocationIndicatorUBO {
 @vertex
 fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
-    out.position = ubo.matrix * vec4<f32>(in.position, 0.0, 1.0);
+    let clip = ubo.matrix * vec4<f32>(in.position, 0.0, 1.0);
+    out.position = encode_clip(clip);
     return out;
 }
 )";
@@ -81,7 +82,8 @@ struct LocationIndicatorUBO {
 @vertex
 fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
-    out.position = ubo.matrix * vec4<f32>(in.position, 0.0, 1.0);
+    let clip = ubo.matrix * vec4<f32>(in.position, 0.0, 1.0);
+    out.position = encode_clip(clip);
     out.uv = in.uv;
     return out;
 }

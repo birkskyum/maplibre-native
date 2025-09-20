@@ -83,6 +83,14 @@ fn glMod2v(x: vec2<f32>, y: vec2<f32>) -> vec2<f32> {
 fn gl_mod(x: vec2<f32>, y: vec2<f32>) -> vec2<f32> {
     return glMod2v(x, y);
 }
+
+// Convert OpenGL-style clip coordinates (z in [-w, w]) to WebGPU/D3D depth range [0, w]
+fn encode_clip(position: vec4<f32>) -> vec4<f32> {
+    return vec4<f32>(position.x,
+                     position.y,
+                     position.z * 0.5 + position.w * 0.5,
+                     position.w);
+}
 )";
 };
 

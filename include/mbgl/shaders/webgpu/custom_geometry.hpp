@@ -36,7 +36,8 @@ struct CustomDrawableUBO {
 fn main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     out.uv = in.texcoord;
-    out.position = drawable.matrix * vec4<f32>(in.position, 1.0);
+    let clip = drawable.matrix * vec4<f32>(in.position, 1.0);
+    out.position = encode_clip(clip);
     return out;
 }
 )";

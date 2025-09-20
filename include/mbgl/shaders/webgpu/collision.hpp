@@ -52,10 +52,11 @@ fn main(in: VertexInput) -> VertexOutput {
     // Assuming camera_to_center_distance is 1.0 for now
     let collision_perspective_ratio = clamp(0.5 + 0.5 * (1.0 / camera_to_anchor_distance), 0.0, 4.0);
     
-    out.position = drawable.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
+    var clip = drawable.matrix * vec4<f32>(f32(in.position.x), f32(in.position.y), 0.0, 1.0);
     let extrude_shift = vec2<f32>(f32(in.extrude.x), f32(in.extrude.y)) + in.shift;
-    out.position.x += extrude_shift.x * tile_props.extrude_scale.x * out.position.w * collision_perspective_ratio;
-    out.position.y += extrude_shift.y * tile_props.extrude_scale.y * out.position.w * collision_perspective_ratio;
+    clip.x += extrude_shift.x * tile_props.extrude_scale.x * clip.w * collision_perspective_ratio;
+    clip.y += extrude_shift.y * tile_props.extrude_scale.y * clip.w * collision_perspective_ratio;
+    out.position = encode_clip(clip);
     
     out.placed = f32(in.placed.x);
     out.not_used = f32(in.placed.y);
@@ -140,12 +141,13 @@ fn main(in: VertexInput) -> VertexOutput {
     
     let extrude_vec = vec2<f32>(f32(in.extrude.x) / 256.0 - 128.0, f32(in.extrude.y) / 256.0 - 128.0);
     
-    out.position = drawable.matrix * vec4<f32>(
+    let clip = drawable.matrix * vec4<f32>(
         f32(in.anchor_position.x) + extrude_vec.x * radius,
         f32(in.anchor_position.y) + extrude_vec.y * radius,
         0.0,
         1.0
     );
+    out.position = encode_clip(clip);
     
     out.placed = f32(in.placed);
     out.radius = radius;

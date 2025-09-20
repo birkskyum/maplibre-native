@@ -67,7 +67,8 @@ fn main(in: VertexInput) -> VertexOutput {
     
     // Calculate position
     let pos = floor(pos_f * 0.5);
-    out.position = drawable.matrix * vec4<f32>(pos + scaled_extrude, 0.0, 1.0);
+    let clip = drawable.matrix * vec4<f32>(pos + scaled_extrude, 0.0, 1.0);
+    out.position = encode_clip(clip);
     
     out.weight = weight;
     out.extrude = extrude;

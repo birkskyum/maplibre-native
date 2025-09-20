@@ -59,7 +59,8 @@ fn main(in: VertexInput, instance: InstanceInput) -> VertexOutput {
 
     // Calculate position with offset based on normal
     let worldPos = instance.instanceCenter + vec3<f32>(in.normal * ubo.width, 0.0);
-    out.position = ubo.mvpMatrix * vec4<f32>(worldPos, 1.0);
+    let clip = ubo.mvpMatrix * vec4<f32>(worldPos, 1.0);
+    out.position = encode_clip(clip);
 
     // Pass through color and texture coordinates
     out.color = instance.instanceColor * ubo.color;
