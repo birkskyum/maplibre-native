@@ -217,19 +217,6 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
                     .pad1 = 0
                 };
 
-#if !defined(NDEBUG)
-                static int lineWidthLogCount = 0;
-                if (lineWidthLogCount < 8) {
-                    lineWidthLogCount++;
-                    const float evaluatedWidth =
-                        evaluated.get<LineWidth>().constantOr(LineWidth::defaultValue());
-                    mbgl::Log::Info(mbgl::Event::Render,
-                                    "Line width eval=" + std::to_string(evaluatedWidth) +
-                                        " ratio=" + std::to_string(lineRatio) +
-                                        " tile=" + util::toString(tileID));
-                }
-#endif
-
 #if !MLN_UBO_CONSOLIDATION
                 drawableUniforms.createOrUpdate(idLineDrawableUBO, &drawableUBO, context);
 #endif
