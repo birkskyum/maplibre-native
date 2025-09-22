@@ -198,7 +198,6 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
 #endif
         switch (static_cast<LineType>(drawable.getType())) {
             case LineType::Simple: {
-                const float lineRatio = 1.0f / tileID.pixelsToTileUnits(1.0f, static_cast<float>(zoom));
 
 #if MLN_UBO_CONSOLIDATION
                 drawableUBOVector[i].lineDrawableUBO = {
@@ -206,7 +205,7 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
                 const LineDrawableUBO drawableUBO = {
 #endif
                     .matrix = util::cast<float>(matrix),
-                    .ratio = lineRatio,
+                    .ratio = 1.0f / tileID.pixelsToTileUnits(1.0f, static_cast<float>(zoom)),
 
                     .color_t = std::get<0>(binders->get<LineColor>()->interpolationFactor(zoom)),
                     .blur_t = std::get<0>(binders->get<LineBlur>()->interpolationFactor(zoom)),
