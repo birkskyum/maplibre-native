@@ -16,7 +16,6 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <limits>
 
 namespace mbgl {
 
@@ -118,8 +117,6 @@ private:
 
     // This needs to be an ordered map so that we have the same order as the renderTiles.
     std::map<UnwrappedTileID, int32_t> tileClippingMaskIDs;
-    std::vector<UnwrappedTileID> lastClippingMaskTiles;
-    uint64_t lastClippingMaskFrame = std::numeric_limits<uint64_t>::max();
     int32_t nextStencilID = 1;
 
 public:
