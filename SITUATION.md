@@ -72,6 +72,7 @@ cmake --build build --target mbgl-glfw -- -j8
 - Aligned the WebGPU raster shader with the Metal/GL uniform layout: the WGSL now reads `RasterDrawableUBO` and `RasterEvaluatedPropsUBO` through the consolidated UBO array, reconstructs the parent cross-fade coordinates, and applies hue/brightness adjustments per pixel. See `include/mbgl/shaders/webgpu/raster.hpp`.
 - Built and ran `timeout 15 ./build/platform/glfw/mbgl-glfw --backend webgpu --style satstyle.json --zoom 2`; Dawn compiled the new raster pipeline without validation errors and the satellite raster tiles render in the GLFW WebGPU sample.
 - WebGPU's drawable builder now clears its cached texture slots after each flush (`src/mbgl/webgpu/drawable_builder.cpp`), forcing raster drawables to bind their own `Texture2D` handles. The previous cache leaked the first tile's texture across subsequent drawables, so every tile rendered the same imagery.
+- Coastline outlines (from `coastline.json`) now render on every tile: the line renderer sets the drawable line width from the evaluated style value, and the triangulated fill-outline UBO stores that width so the WGSL/Metal/Vulkan shaders use the intended thickness instead of the previous 1 px default.
 
 ## Observations
 - `./build/platform/glfw/mbgl-glfw --backend=webgpu --style=https://demotiles.maplibre.org/style.json` now reports `WebGPU: selected surface format BGRA8Unorm` and renders the MapLibre demo tiles correctly on macOS. The translucent/opaque passes log non-zero drawable counts, confirming geometry is making it through the pipeline.
@@ -97,3 +98,9 @@ cmake --build build --target mbgl-glfw -- -j8
 - Extend the new depth/stencil plumbing to 3D drawables (extrusions, terrain) once the upstream hooks are ready.
 - Align the WebGPU shader-group selection and bind group layout caching with the Metal/Vulkan registries to reduce redundant pipeline creation.
 - Trim logging/no-op debug group stubs once the backend hardens and we decide how to surface Dawn debug markers across platforms.
+
+## Recent WebGPU fixes (2025-09-20)
+- Deterministically rebuild WebGPU tile clip masks: deduplicate/sort visible tiles before assigning stencil refs, reuse the previous map when the set is unchanged, and keep `nextStencilID` in sync so fill-outline coastlines land on every tile instead of only the first few.
+- `./run_webgpu.sh` with `coastline.json` now prints steady `WebGPU: Rendering 4–5 clipping masks for tiles` messages without the earlier scissor-rect validation faults; Dawn still tears down the device after a few seconds on this headless X11 setup, so a visual inspection isn’t possible here, but the stencil logs stay stable frame-to-frame.
+## Recent WebGPU fixes (2025-09-21)
+- Preserve stencil refs across frames: cache the sorted tile list per frame, regenerate the mask only when the visible set actually changes, and clear/reassign IDs in one shot so both fill outlines and plain line layers reuse the same stencil values for the entire frame.

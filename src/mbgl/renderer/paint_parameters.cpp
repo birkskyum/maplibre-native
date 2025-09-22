@@ -31,6 +31,9 @@
 #include <mbgl/vulkan/context.hpp>
 #endif // MLN_RENDER_BACKEND_VULKAN
 
+#include <algorithm>
+#include <set>
+
 namespace mbgl {
 
 TransformParameters::TransformParameters(const TransformState& state_)
@@ -137,7 +140,7 @@ using GetTileIDFunc = const UnwrappedTileID& (*)(const typename TIter::value_typ
 using TileMaskIDMap = std::map<UnwrappedTileID, int32_t>;
 
 // Check whether we can reuse a clip mask for a new set of tiles
-bool tileIDsCovered(const RenderTiles& tiles, const TileMaskIDMap& idMap) {
+[[maybe_unused]] bool tileIDsCovered(const RenderTiles& tiles, const TileMaskIDMap& idMap) {
     return idMap.size() == tiles->size() &&
            std::equal(idMap.cbegin(), idMap.cend(), tiles->cbegin(), tiles->cend(), [=](const auto& a, const auto& b) {
                return a.first == b.get().id;
@@ -149,6 +152,8 @@ bool tileIDsCovered(const RenderTiles& tiles, const TileMaskIDMap& idMap) {
 void PaintParameters::clearStencil() {
     nextStencilID = 1;
     tileClippingMaskIDs.clear();
+    lastClippingMaskTiles.clear();
+    lastClippingMaskFrame = std::numeric_limits<uint64_t>::max();
 
 #if MLN_RENDER_BACKEND_METAL
     auto& mtlContext = static_cast<mtl::Context&>(context);
@@ -180,39 +185,100 @@ void PaintParameters::clearStencil() {
 }
 
 void PaintParameters::renderTileClippingMasks(const RenderTiles& renderTiles) {
+#if MLN_RENDER_BACKEND_WEBGPU
+    if (!renderTiles || !renderPass) {
+        return;
+    }
+#else
     // We can avoid updating the mask if it already contains the same set of tiles.
     if (!renderTiles || !renderPass || tileIDsCovered(renderTiles, tileClippingMaskIDs)) {
         return;
     }
-
-    tileClippingMaskIDs.clear();
-
-    // If the stencil value will overflow, clear the target to ensure ensure that none of the new
-    // values remain set somewhere in it. Otherwise we can continue to overwrite it incrementally.
-    const auto count = renderTiles->size();
-    if (nextStencilID + count > maxStencilValue) {
-        clearStencil();
-    }
+#endif
 
 #if MLN_RENDER_BACKEND_WEBGPU
-    std::vector<shaders::ClipUBO> tileUBOs;
+    std::vector<UnwrappedTileID> sortedTiles;
+    sortedTiles.reserve(renderTiles->size());
     for (const auto& tileRef : *renderTiles) {
-        const auto& tileID = tileRef.get().id;
+        sortedTiles.push_back(tileRef.get().id);
+    }
 
-        const int32_t stencilID = nextStencilID;
-        const auto result = tileClippingMaskIDs.insert(std::make_pair(tileID, stencilID));
-        if (result.second) {
-            nextStencilID++;
-        } else {
+    if (sortedTiles.empty()) {
+        return;
+    }
+
+    std::sort(sortedTiles.begin(), sortedTiles.end());
+    sortedTiles.erase(std::unique(sortedTiles.begin(), sortedTiles.end()), sortedTiles.end());
+
+    const bool sameTiles = sortedTiles == lastClippingMaskTiles;
+    if (sameTiles && lastClippingMaskFrame == frameCount) {
+#if !defined(NDEBUG)
+        static int clipSkipLogCount = 0;
+        if (clipSkipLogCount < 12) {
+            ++clipSkipLogCount;
+            Log::Info(Event::Render,
+                      "Clip mask reuse frame=" + std::to_string(frameCount) +
+                          " tiles=" + std::to_string(sortedTiles.size()));
+        }
+#endif
+        return;
+    }
+
+    clearStencil();
+    tileClippingMaskIDs.clear();
+
+    nextStencilID = 1;
+
+    const auto limit = std::min(sortedTiles.size(), static_cast<std::size_t>(maxStencilValue));
+    for (std::size_t idx = 0; idx < limit; ++idx) {
+        const auto& tileID = sortedTiles[idx];
+        tileClippingMaskIDs.emplace(tileID, nextStencilID++);
+    }
+
+    if (sortedTiles.size() > maxStencilValue) {
+        Log::Warning(Event::Render,
+                     "WebGPU clip mask overflow: trimming tile list from " +
+                         std::to_string(sortedTiles.size()) + " to " +
+                         std::to_string(maxStencilValue));
+    }
+
+    nextStencilID = std::min<int32_t>(nextStencilID, maxStencilValue + 1);
+
+    lastClippingMaskTiles = sortedTiles;
+    lastClippingMaskFrame = frameCount;
+
+#if !defined(NDEBUG)
+    static int clipLogCount = 0;
+    if (clipLogCount < 12) {
+        std::string mapLog;
+        mapLog.reserve(tileClippingMaskIDs.size() * 24);
+        bool first = true;
+        for (const auto& entry : tileClippingMaskIDs) {
+            if (!first) {
+                mapLog.append(", ");
+            }
+            first = false;
+            mapLog.append(util::toString(entry.first));
+            mapLog.push_back('=');
+            mapLog.append(std::to_string(entry.second));
+        }
+        clipLogCount++;
+        Log::Info(Event::Render,
+                  "WebGPU clip mask (frame=" + std::to_string(frameCount) + ") " +
+                      mapLog);
+    }
+#endif
+
+    std::vector<shaders::ClipUBO> tileUBOs;
+    tileUBOs.reserve(sortedTiles.size());
+    for (const auto& tileID : sortedTiles) {
+        const auto it = tileClippingMaskIDs.find(tileID);
+        if (it == tileClippingMaskIDs.end()) {
             continue;
         }
 
-        if (tileUBOs.empty()) {
-            tileUBOs.reserve(count);
-        }
-
         tileUBOs.emplace_back(shaders::ClipUBO{/* .matrix = */ util::cast<float>(matrixForTile(tileID)),
-                                               /* .stencil_ref = */ static_cast<uint32_t>(stencilID),
+                                               /* .stencil_ref = */ static_cast<uint32_t>(it->second),
                                                /* .pad1 = */ 0,
                                                /* .pad2 = */ 0,
                                                /* .pad3 = */ 0});

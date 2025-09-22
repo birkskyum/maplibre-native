@@ -19,6 +19,7 @@
 #include <mbgl/util/intersection_tests.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/math.hpp>
+#include <vector>
 
 #include <mbgl/gfx/drawable_atlases_tweaker.hpp>
 #include <mbgl/gfx/drawable_builder.hpp>
@@ -40,6 +41,10 @@ inline const LineLayer::Impl& impl_cast(const Immutable<style::Layer::Impl>& imp
     assert(impl->getTypeInfo() == LineLayer::Impl::staticTypeInfo());
     return static_cast<const LineLayer::Impl&>(*impl);
 }
+
+#if MLN_RENDER_BACKEND_WEBGPU
+const std::vector<float> solidDashPattern = {1.0f, 0.0f};
+#endif
 
 const auto posNormalAttribName = "a_pos_normal";
 
@@ -104,14 +109,24 @@ void RenderLineLayer::prepare(const LayerPrepareParameters& params) {
         if (!renderData) continue;
 
         const auto& evaluated = getEvaluated<LineLayerProperties>(renderData->layerProperties);
+#if MLN_RENDER_BACKEND_WEBGPU
+        const bool solidDashFallback = evaluated.get<LineDasharray>().from.empty();
+        if (!solidDashFallback && evaluated.get<LineDasharray>().from.empty()) {
+            continue;
+        }
+        const auto& dashFrom = solidDashFallback ? solidDashPattern : evaluated.get<LineDasharray>().from;
+        const auto& dashTo = solidDashFallback ? solidDashPattern : evaluated.get<LineDasharray>().to;
+#else
         if (evaluated.get<LineDasharray>().from.empty()) continue;
+        const auto& dashFrom = evaluated.get<LineDasharray>().from;
+        const auto& dashTo = evaluated.get<LineDasharray>().to;
+#endif
 
         const auto& bucket = static_cast<const LineBucket&>(*renderData->bucket);
         const LinePatternCap cap = bucket.layout.get<LineCap>() == LineCapType::Round ? LinePatternCap::Round
                                                                                       : LinePatternCap::Square;
         // Ensures that the dash data gets added to the atlas.
-        params.lineAtlas.getDashPatternTexture(
-            evaluated.get<LineDasharray>().from, evaluated.get<LineDasharray>().to, cap);
+        params.lineAtlas.getDashPatternTexture(dashFrom, dashTo, cap);
     }
 }
 
@@ -325,6 +340,26 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
         auto& paintPropertyBinders = bucket.paintPropertyBinders.at(getID());
         const auto& evaluated = getEvaluated<LineLayerProperties>(renderData->layerProperties);
 
+        const auto dashEval = evaluated.get<LineDasharray>();
+#if MLN_RENDER_BACKEND_WEBGPU
+        const bool solidDashFallback = dashEval.from.empty();
+#else
+        const bool solidDashFallback = false;
+#endif
+        const bool hasDashProperty = !dashEval.from.empty();
+        const bool hasDash = hasDashProperty || solidDashFallback;
+        const bool hasPattern = !this->unevaluated.get<LinePattern>().isUndefined();
+        const bool hasGradient = !this->unevaluated.get<LineGradient>().getValue().isUndefined();
+
+        LineLayerTweaker::LineType expectedType = LineLayerTweaker::LineType::Simple;
+        if (hasDash) {
+            expectedType = LineLayerTweaker::LineType::SDF;
+        } else if (hasPattern) {
+            expectedType = LineLayerTweaker::LineType::Pattern;
+        } else if (hasGradient) {
+            expectedType = LineLayerTweaker::LineType::Gradient;
+        }
+
         const auto prevBucketID = getRenderTileBucketID(tileID);
         if (prevBucketID != util::SimpleIdentity::Empty && prevBucketID != bucket.getID()) {
             // This tile was previously set up from a different bucket, drop and re-create any drawables for it.
@@ -337,13 +372,20 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
                 // This drawable was produced on a previous style/bucket, and should not be updated.
                 return false;
             }
+            const auto existingType = static_cast<LineLayerTweaker::LineType>(drawable.getType());
+            if (existingType != expectedType) {
+                return false;
+            }
             return true;
         };
         if (updateTile(renderPass, tileID, std::move(updateExisting))) {
             continue;
         }
 
-        const auto addDrawable = [&](std::unique_ptr<gfx::Drawable>&& drawable, LineLayerTweaker::LineType type) {
+        const auto addDrawable = [&](std::unique_ptr<gfx::Drawable>&& drawable,
+                                     LineLayerTweaker::LineType type,
+                                     std::vector<float> dashFromOverride = {},
+                                     std::vector<float> dashToOverride = {}) {
             drawable->setTileID(tileID);
             drawable->setType(mbgl::underlying_type(type));
             drawable->setLayerTweaker(layerTweaker);
@@ -352,8 +394,9 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
 
             const bool roundCap = bucket.layout.get<LineCap>() == LineCapType::Round;
             const auto capType = roundCap ? LinePatternCap::Round : LinePatternCap::Square;
-            drawable->setData(std::make_unique<gfx::LineDrawableData>(capType));
-
+            drawable->setData(std::make_unique<gfx::LineDrawableData>(capType,
+                                                                      std::move(dashFromOverride),
+                                                                      std::move(dashToOverride)));
             tileLayerGroup->addDrawable(renderPass, tileID, std::move(drawable));
             ++stats.drawablesAdded;
         };
@@ -372,7 +415,7 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
                                                    LinePattern>(
             paintPropertyBinders, evaluated, propertiesAsUniforms, idLineColorVertexAttribute);
 
-        if (!evaluated.get<LineDasharray>().from.empty()) {
+        if (hasDash) {
             // dash array line (SDF)
             if (!lineSDFShaderGroup) {
                 lineSDFShaderGroup = shaders.getShaderGroup("LineSDFShader");
@@ -394,9 +437,19 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
 
             builder->flush(context);
             for (auto& drawable : builder->clearDrawables()) {
-                addDrawable(std::move(drawable), LineLayerTweaker::LineType::SDF);
+#if MLN_RENDER_BACKEND_WEBGPU
+                if (solidDashFallback) {
+                    addDrawable(std::move(drawable),
+                                LineLayerTweaker::LineType::SDF,
+                                std::vector<float>(solidDashPattern.begin(), solidDashPattern.end()),
+                                std::vector<float>(solidDashPattern.begin(), solidDashPattern.end()));
+                } else
+#endif
+                {
+                    addDrawable(std::move(drawable), LineLayerTweaker::LineType::SDF);
+                }
             }
-        } else if (!unevaluated.get<LinePattern>().isUndefined()) {
+        } else if (hasPattern) {
             // pattern line
             if (!linePatternShaderGroup) {
                 linePatternShaderGroup = shaders.getShaderGroup("LinePatternShader");
@@ -436,7 +489,7 @@ void RenderLineLayer::update(gfx::ShaderRegistry& shaders,
                     addDrawable(std::move(drawable), LineLayerTweaker::LineType::Pattern);
                 }
             }
-        } else if (!unevaluated.get<LineGradient>().getValue().isUndefined()) {
+        } else if (hasGradient) {
             // gradient line
             if (!lineGradientShaderGroup) {
                 lineGradientShaderGroup = shaders.getShaderGroup("LineGradientShader");

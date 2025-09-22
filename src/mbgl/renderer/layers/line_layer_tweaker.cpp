@@ -198,13 +198,15 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
 #endif
         switch (static_cast<LineType>(drawable.getType())) {
             case LineType::Simple: {
+                const float lineRatio = 1.0f / tileID.pixelsToTileUnits(1.0f, static_cast<float>(zoom));
+
 #if MLN_UBO_CONSOLIDATION
                 drawableUBOVector[i].lineDrawableUBO = {
 #else
                 const LineDrawableUBO drawableUBO = {
 #endif
                     .matrix = util::cast<float>(matrix),
-                    .ratio = 1.0f / tileID.pixelsToTileUnits(1.0f, static_cast<float>(zoom)),
+                    .ratio = lineRatio,
 
                     .color_t = std::get<0>(binders->get<LineColor>()->interpolationFactor(zoom)),
                     .blur_t = std::get<0>(binders->get<LineBlur>()->interpolationFactor(zoom)),
@@ -214,6 +216,19 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
                     .width_t = std::get<0>(binders->get<LineWidth>()->interpolationFactor(zoom)),
                     .pad1 = 0
                 };
+
+#if !defined(NDEBUG)
+                static int lineWidthLogCount = 0;
+                if (lineWidthLogCount < 8) {
+                    lineWidthLogCount++;
+                    const float evaluatedWidth =
+                        evaluated.get<LineWidth>().constantOr(LineWidth::defaultValue());
+                    mbgl::Log::Info(mbgl::Event::Render,
+                                    "Line width eval=" + std::to_string(evaluatedWidth) +
+                                        " ratio=" + std::to_string(lineRatio) +
+                                        " tile=" + util::toString(tileID));
+                }
+#endif
 
 #if !MLN_UBO_CONSOLIDATION
                 drawableUniforms.createOrUpdate(idLineDrawableUBO, &drawableUBO, context);
@@ -303,10 +318,15 @@ void LineLayerTweaker::execute(LayerGroupBase& layerGroup, const PaintParameters
             case LineType::SDF: {
                 if (const auto& data = drawable.getData()) {
                     const gfx::LineDrawableData& lineData = static_cast<const gfx::LineDrawableData&>(*data);
-                    const auto& dashPatternTexture = parameters.lineAtlas.getDashPatternTexture(
-                        evaluated.get<LineDasharray>().from,
-                        evaluated.get<LineDasharray>().to,
-                        lineData.linePatternCap);
+                    const auto& dashFrom = lineData.dashFromOverride.empty()
+                                              ? evaluated.get<LineDasharray>().from
+                                              : lineData.dashFromOverride;
+                    const auto& dashTo = lineData.dashToOverride.empty()
+                                            ? evaluated.get<LineDasharray>().to
+                                            : lineData.dashToOverride;
+
+                    const auto& dashPatternTexture =
+                        parameters.lineAtlas.getDashPatternTexture(dashFrom, dashTo, lineData.linePatternCap);
 
                     // texture
                     if (!drawable.getTexture(idLineImageTexture)) {

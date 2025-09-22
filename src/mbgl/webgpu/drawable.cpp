@@ -382,7 +382,7 @@ void Drawable::upload(gfx::UploadPass& uploadPass) {
 }
 
 void Drawable::draw(PaintParameters& parameters) const {
-    static int drawCallCount = 0;
+static int drawCallCount = 0;
     drawCallCount++;
     if (drawCallCount <= 2000) {
         // Log::Info(Event::Render, "WebGPU Drawable::draw #" + std::to_string(drawCallCount) + " for " + getName() +
@@ -646,8 +646,27 @@ void Drawable::draw(PaintParameters& parameters) const {
         if (getEnableDepth()) {
             depthMode = parameters.depthModeForSublayer(getSubLayerIndex(), getDepthType());
         }
-        if (getEnableStencil() && drawableTileID) {
-            stencilMode = parameters.stencilModeForClipping(drawableTileID->toUnwrapped());
+       if (getEnableStencil() && drawableTileID) {
+           stencilMode = parameters.stencilModeForClipping(drawableTileID->toUnwrapped());
+            static int stencilLineLogCount = 0;
+            static int stencilFillOutlineLogCount = 0;
+            if (getName().find("line") != std::string::npos && stencilLineLogCount < 16) {
+                ++stencilLineLogCount;
+                mbgl::Log::Info(mbgl::Event::Render,
+                                "Stencil ref line frame=" + std::to_string(parameters.frameCount) +
+                                    " name=" + getName() + " tile=" +
+                                    (drawableTileID ? util::toString(*drawableTileID) : std::string("none")) +
+                                    " ref=" + std::to_string(stencilMode.ref));
+            } else if (getName().find("fill-outline") != std::string::npos &&
+                       stencilFillOutlineLogCount < 16) {
+                ++stencilFillOutlineLogCount;
+                mbgl::Log::Info(mbgl::Event::Render,
+                                "Stencil ref fill-outline frame=" +
+                                    std::to_string(parameters.frameCount) + " name=" + getName() +
+                                    " tile=" +
+                                    (drawableTileID ? util::toString(*drawableTileID) : std::string("none")) +
+                                    " ref=" + std::to_string(stencilMode.ref));
+            }
         }
     }
 
@@ -812,6 +831,18 @@ void Drawable::draw(PaintParameters& parameters) const {
         wgpuRenderPassEncoderSetPipeline(renderPassEncoder, impl->pipelineState);
         if (getEnableStencil()) {
             wgpuRenderPassEncoderSetStencilReference(renderPassEncoder, static_cast<uint32_t>(stencilMode.ref));
+#if !defined(NDEBUG)
+            static int stencilSetLogCount = 0;
+            if (stencilSetLogCount < 24 && (getName().find("line") != std::string::npos ||
+                                            getName().find("fill-outline") != std::string::npos)) {
+                ++stencilSetLogCount;
+                const auto tileStr = getTileID() ? util::toString(*getTileID()) : std::string("none");
+                Log::Info(Event::Render,
+                          "Set stencil ref frame=" + std::to_string(parameters.frameCount) +
+                              " name=" + getName() + " tile=" + tileStr +
+                              " ref=" + std::to_string(stencilMode.ref));
+            }
+#endif
         }
     } else {
         Log::Warning(Event::Render,
@@ -914,17 +945,14 @@ void Drawable::draw(PaintParameters& parameters) const {
     for (const auto& seg_ : impl->segments) {
         const auto& segment = static_cast<DrawSegment&>(*seg_);
         const auto& mlSegment = segment.getSegment();
-        if (mlSegment.indexLength > 0) {
-            const uint32_t instanceCount = instanceAttributes ? instanceAttributes->getMaxCount() : 1;
-            const uint32_t indexOffset = mlSegment.indexOffset;
-            const int32_t baseVertex = static_cast<int32_t>(mlSegment.vertexOffset);
-            const uint32_t baseInstance = 0;
-
-            if (getName().find("fill-outline") != std::string::npos && drawCallCount <= 400) {
-                Log::Info(Event::Render,
-                          "Fill-outline draw segment indices=" + std::to_string(mlSegment.indexLength) +
-                              " uboIndex=" + std::to_string(getUBOIndex()) +
-                              (tileID ? " tile=" + util::toString(*tileID) : std::string("")));
+       if (mlSegment.indexLength > 0) {
+           const uint32_t instanceCount = instanceAttributes ? instanceAttributes->getMaxCount() : 1;
+           const uint32_t indexOffset = mlSegment.indexOffset;
+           const int32_t baseVertex = static_cast<int32_t>(mlSegment.vertexOffset);
+           const uint32_t baseInstance = 0;
+            static int lineDrawLogCount = 0;
+            if (lineDrawLogCount < 200 && getName().find("line") != std::string::npos) {
+                lineDrawLogCount++;
             }
 
             // Check if encoder is valid before drawing
