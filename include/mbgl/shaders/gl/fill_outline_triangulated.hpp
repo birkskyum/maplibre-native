@@ -34,9 +34,9 @@ layout (std140) uniform GlobalPaintParamsUBO {
 layout (std140) uniform FillOutlineTriangulatedDrawableUBO {
     highp mat4 u_matrix;
     mediump float u_ratio;
-    lowp float u_width;
     lowp float drawable_pad1;
     lowp float drawable_pad2;
+    lowp float drawable_pad3;
 };
 
 layout (std140) uniform FillEvaluatedPropsUBO {
