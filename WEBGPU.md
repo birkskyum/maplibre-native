@@ -208,6 +208,12 @@ Despite both backends implementing the WebGPU standard, there are minor API diff
 - **Solution**: Code uses `false` directly instead
 - **Location**: render_pass.cpp lines 112, 122
 
+**Swizzle assignment not allowed** (✅ FIXED):
+- **Issue**: wgpu-native shader validator rejects assignments to swizzles (`lighting.rgb += ...`)
+- **Reason**: More strict WGSL spec compliance - swizzle assignments are not valid WGSL
+- **Solution**: Reconstruct full vec4 instead: `lighting = vec4<f32>(lighting.rgb + lit, lighting.a)`
+- **Location**: include/mbgl/shaders/webgpu/fill_extrusion.hpp:310
+
 ### Dawn Specific
 
 No known limitations at this time. Dawn is more mature and fully implements the WebGPU specification.
