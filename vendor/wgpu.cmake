@@ -114,6 +114,61 @@ else()
     message(STATUS "Found wgpu-native library: ${WGPU_LIBRARY}")
 endif()
 
+# Generate WebGPU-Cpp wrapper if needed
+set(_webgpu_cpp_dir "${PROJECT_SOURCE_DIR}/vendor/webgpu-cpp")
+set(_webgpu_cpp_header "${_webgpu_cpp_dir}/webgpu.hpp")
+
+if(NOT EXISTS "${_webgpu_cpp_header}")
+    message(STATUS "Generating WebGPU-Cpp wrapper...")
+
+    # Check if Python 3 is available
+    find_program(PYTHON_EXECUTABLE python3 python)
+    if(NOT PYTHON_EXECUTABLE)
+        message(FATAL_ERROR
+            "Python is required to generate WebGPU-Cpp wrapper. "
+            "Please install Python 3.")
+    endif()
+
+    # Run the generator script using the local webgpu.h from wgpu-native
+    execute_process(
+        COMMAND ${PYTHON_EXECUTABLE} generate.py
+            --use-init-macros
+            --header ${_mln_wgpu_source_dir}/ffi/webgpu/webgpu.h
+        WORKING_DIRECTORY ${_webgpu_cpp_dir}
+        RESULT_VARIABLE _gen_result
+        OUTPUT_VARIABLE _gen_output
+        ERROR_VARIABLE _gen_error
+    )
+
+    if(NOT _gen_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to generate WebGPU-Cpp wrapper:\n${_gen_error}")
+    endif()
+
+    message(STATUS "Successfully generated WebGPU-Cpp wrapper")
+endif()
+
+# Create compatibility shim for Dawn header paths if it doesn't exist
+set(_compat_shim_dir "${_webgpu_cpp_dir}/wgpu-native/webgpu")
+set(_compat_shim_header "${_compat_shim_dir}/webgpu_cpp.h")
+
+if(NOT EXISTS "${_compat_shim_header}")
+    message(STATUS "Creating WebGPU-Cpp compatibility shim...")
+
+    file(MAKE_DIRECTORY "${_compat_shim_dir}")
+    file(WRITE "${_compat_shim_header}"
+"#pragma once
+// Compatibility shim for Dawn header paths
+// This file allows MapLibre code to use #include <webgpu/webgpu_cpp.h>
+// for both Dawn and wgpu-native backends
+
+// Include the WebGPU-Cpp wrapper
+#include \"../../webgpu.hpp\"
+")
+
+    message(STATUS "Successfully created compatibility shim")
+endif()
+
 # Create interface library
 add_library(mbgl-vendor-wgpu INTERFACE)
 
@@ -122,7 +177,8 @@ target_link_libraries(mbgl-vendor-wgpu INTERFACE ${WGPU_LIBRARY})
 # Add include directories for webgpu.h, wgpu.h, and C++ wrapper
 target_include_directories(mbgl-vendor-wgpu
     SYSTEM INTERFACE
-        ${PROJECT_SOURCE_DIR}/vendor/webgpu-cpp/wgpu-native
+        ${_webgpu_cpp_dir}                      # For generated webgpu.hpp
+        ${_webgpu_cpp_dir}/wgpu-native          # For webgpu/webgpu_cpp.h compatibility shim
         ${_mln_wgpu_source_dir}/ffi/webgpu-headers
         ${_mln_wgpu_source_dir}/ffi
 )

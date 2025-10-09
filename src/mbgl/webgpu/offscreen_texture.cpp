@@ -9,6 +9,11 @@
 #include <chrono>
 #include <thread>
 
+// Include wgpu.h for wgpu-native specific functions like wgpuDevicePoll
+#if defined(WEBGPU_BACKEND_WGPU)
+#include <webgpu/wgpu.h>
+#endif
+
 namespace {
 constexpr uint32_t bytesPerRowAlignment = 256u;
 }
