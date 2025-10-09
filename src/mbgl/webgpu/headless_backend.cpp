@@ -4,7 +4,12 @@
 #include <mbgl/webgpu/offscreen_texture.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/webgpu/wgpu_cpp_compat.hpp>
+
+#if defined(WEBGPU_BACKEND_WGPU)
+#include <webgpu/wgpu.h>
+#else
 #include <dawn/native/DawnNative.h>
+#endif
 
 namespace mbgl {
 namespace webgpu {
@@ -87,7 +92,12 @@ private:
 
 class HeadlessBackend::Impl {
 public:
+#if defined(WEBGPU_BACKEND_WGPU)
+    wgpu::Instance instance;
+    wgpu::Adapter adapter;
+#else
     std::unique_ptr<dawn::native::Instance> instance;
+#endif
     wgpu::Device device;
     wgpu::Queue queue;
     wgpu::Texture offscreenTexture;
@@ -105,7 +115,45 @@ HeadlessBackend::HeadlessBackend(Size size_, SwapBehaviour swapBehaviour_, gfx::
 
     impl->framebufferSize = size_;
 
-    // Initialize Dawn instance with TimedWaitAny feature enabled
+#if defined(WEBGPU_BACKEND_WGPU)
+    // wgpu-native backend initialization
+    wgpu::InstanceDescriptor instanceDesc = {};
+    impl->instance = wgpu::createInstance(instanceDesc);
+
+    if (!impl->instance) {
+        Log::Error(Event::Render, "WebGPU HeadlessBackend: Failed to create instance");
+        return;
+    }
+
+    // Request adapter using simpler blocking API
+    wgpu::RequestAdapterOptions adapterOpts = {};
+    adapterOpts.powerPreference = wgpu::PowerPreference::HighPerformance;
+
+    impl->adapter = impl->instance.requestAdapter(adapterOpts);
+
+    if (!impl->adapter) {
+        Log::Error(Event::Render, "WebGPU HeadlessBackend: No adapter found");
+        return;
+    }
+
+    // Request device using simpler blocking API
+    wgpu::DeviceDescriptor deviceDesc = {};
+
+    impl->device = impl->adapter.requestDevice(deviceDesc);
+
+    if (!impl->device) {
+        Log::Error(Event::Render, "WebGPU HeadlessBackend: Failed to create device");
+        return;
+    }
+
+    impl->queue = impl->device.getQueue();
+
+    // Store device, queue, and instance in base class
+    setDevice(static_cast<WGPUDevice>(impl->device));
+    setQueue(static_cast<WGPUQueue>(impl->queue));
+    setInstance(static_cast<WGPUInstance>(impl->instance));
+#else
+    // Dawn backend initialization
     wgpu::InstanceFeatureName timedWaitAnyFeature = wgpu::InstanceFeatureName::TimedWaitAny;
     wgpu::InstanceDescriptor instanceDesc = {};
     instanceDesc.requiredFeatureCount = 1;
@@ -142,6 +190,7 @@ HeadlessBackend::HeadlessBackend(Size size_, SwapBehaviour swapBehaviour_, gfx::
     setDevice(impl->device.Get());
     setQueue(impl->queue.Get());
     setInstance(impl->instance->Get());
+#endif
 
     // Create offscreen render texture
     createOffscreenTextures();
@@ -177,55 +226,87 @@ void HeadlessBackend::createOffscreenTextures() {
     // Create offscreen color texture
     wgpu::TextureDescriptor colorDesc = {};
     colorDesc.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+#if defined(WEBGPU_BACKEND_WGPU)
+    colorDesc.dimension = wgpu::TextureDimension::_2D;
+#else
     colorDesc.dimension = wgpu::TextureDimension::e2D;
+#endif
     colorDesc.size = {
         static_cast<uint32_t>(impl->framebufferSize.width), static_cast<uint32_t>(impl->framebufferSize.height), 1};
     colorDesc.format = wgpu::TextureFormat::RGBA8Unorm;
     colorDesc.mipLevelCount = 1;
     colorDesc.sampleCount = 1;
-    colorDesc.label = "Headless Color Texture";
 
+#if defined(WEBGPU_BACKEND_WGPU)
+    impl->offscreenTexture = impl->device.createTexture(colorDesc);
+#else
+    colorDesc.label = "Headless Color Texture";
     impl->offscreenTexture = impl->device.CreateTexture(&colorDesc);
+#endif
 
     if (impl->offscreenTexture) {
         wgpu::TextureViewDescriptor viewDesc = {};
         viewDesc.format = wgpu::TextureFormat::RGBA8Unorm;
+#if defined(WEBGPU_BACKEND_WGPU)
+        viewDesc.dimension = wgpu::TextureViewDimension::_2D;
+#else
         viewDesc.dimension = wgpu::TextureViewDimension::e2D;
+#endif
         viewDesc.baseMipLevel = 0;
         viewDesc.mipLevelCount = 1;
         viewDesc.baseArrayLayer = 0;
         viewDesc.arrayLayerCount = 1;
         viewDesc.aspect = wgpu::TextureAspect::All;
-        viewDesc.label = "Headless Color TextureView";
 
+#if defined(WEBGPU_BACKEND_WGPU)
+        impl->offscreenTextureView = impl->offscreenTexture.createView(viewDesc);
+#else
+        viewDesc.label = "Headless Color TextureView";
         impl->offscreenTextureView = impl->offscreenTexture.CreateView(&viewDesc);
+#endif
     }
 
     // Create depth/stencil texture
     wgpu::TextureDescriptor depthDesc = {};
     depthDesc.usage = wgpu::TextureUsage::RenderAttachment;
+#if defined(WEBGPU_BACKEND_WGPU)
+    depthDesc.dimension = wgpu::TextureDimension::_2D;
+#else
     depthDesc.dimension = wgpu::TextureDimension::e2D;
+#endif
     depthDesc.size = {
         static_cast<uint32_t>(impl->framebufferSize.width), static_cast<uint32_t>(impl->framebufferSize.height), 1};
     depthDesc.format = wgpu::TextureFormat::Depth24PlusStencil8;
     depthDesc.mipLevelCount = 1;
     depthDesc.sampleCount = 1;
-    depthDesc.label = "Headless Depth/Stencil Texture";
 
+#if defined(WEBGPU_BACKEND_WGPU)
+    impl->depthTexture = impl->device.createTexture(depthDesc);
+#else
+    depthDesc.label = "Headless Depth/Stencil Texture";
     impl->depthTexture = impl->device.CreateTexture(&depthDesc);
+#endif
 
     if (impl->depthTexture) {
         wgpu::TextureViewDescriptor viewDesc = {};
         viewDesc.format = wgpu::TextureFormat::Depth24PlusStencil8;
+#if defined(WEBGPU_BACKEND_WGPU)
+        viewDesc.dimension = wgpu::TextureViewDimension::_2D;
+#else
         viewDesc.dimension = wgpu::TextureViewDimension::e2D;
+#endif
         viewDesc.baseMipLevel = 0;
         viewDesc.mipLevelCount = 1;
         viewDesc.baseArrayLayer = 0;
         viewDesc.arrayLayerCount = 1;
         viewDesc.aspect = wgpu::TextureAspect::All;
-        viewDesc.label = "Headless Depth/Stencil TextureView";
 
+#if defined(WEBGPU_BACKEND_WGPU)
+        impl->depthTextureView = impl->depthTexture.createView(viewDesc);
+#else
+        viewDesc.label = "Headless Depth/Stencil TextureView";
         impl->depthTextureView = impl->depthTexture.CreateView(&viewDesc);
+#endif
     }
 }
 
