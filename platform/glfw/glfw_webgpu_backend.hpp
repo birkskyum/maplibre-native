@@ -6,7 +6,8 @@
 #include <mbgl/gfx/renderable.hpp>
 #include <mbgl/gfx/renderer_backend.hpp>
 #include <memory>
-#include <webgpu/webgpu_cpp.h>
+#include <mbgl/webgpu/wgpu_cpp_compat.hpp>
+#include <webgpu/webgpu.h>
 #include <queue>
 #include <atomic>
 #include <array>
@@ -15,10 +16,12 @@ struct GLFWwindow;
 struct WGPUDeviceImpl;
 struct WGPUSurfaceImpl;
 
+#if !defined(WEBGPU_BACKEND_WGPU)
 namespace dawn::native {
 class Instance;
 class Adapter;
 } // namespace dawn::native
+#endif
 
 // Multiple inheritance: GLFWBackend for window management,
 // webgpu::RendererBackend for rendering, gfx::Renderable for framebuffer
@@ -63,7 +66,11 @@ private:
     mutable SpinLock textureStateLock;
 
     GLFWwindow* window;
+#if defined(WEBGPU_BACKEND_WGPU)
+    wgpu::Instance wgpuInstance;
+#else
     std::unique_ptr<dawn::native::Instance> instance;
+#endif
     wgpu::Device wgpuDevice; // This owns the device
     wgpu::Queue queue;
     wgpu::Surface wgpuSurface;
