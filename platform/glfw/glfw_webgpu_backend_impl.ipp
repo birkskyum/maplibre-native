@@ -64,8 +64,9 @@
         desc.label = label_view; \
     } while(0)
 #else
-#define WGPU_LABEL(desc, label) \
-    desc.label = label
+// Dawn uses simple const char* labels - just assign directly inline
+#define WGPU_LABEL(desc, labelStr) \
+    (desc.label = labelStr)
 #endif
 
 namespace {
@@ -373,7 +374,11 @@ GLFWWebGPUBackend::GLFWWebGPUBackend(GLFWwindow* window_, bool capFrameRate)
 
 
     wgpu::DeviceDescriptor deviceDesc = {};
+#if defined(WEBGPU_BACKEND_WGPU)
     deviceDesc.requiredFeatures = reinterpret_cast<const WGPUFeatureName*>(requiredFeatures.data());
+#else
+    deviceDesc.requiredFeatures = requiredFeatures.data();
+#endif
     deviceDesc.requiredFeatureCount = requiredFeatures.size();
 
 #if !defined(WEBGPU_BACKEND_WGPU)
@@ -523,9 +528,13 @@ GLFWWebGPUBackend::GLFWWebGPUBackend(GLFWwindow* window_, bool capFrameRate)
     config.presentMode = wgpu::PresentMode::Fifo;
     configuredViewFormats[0] = swapChainFormat;
     config.viewFormatCount = 1;
+#if defined(WEBGPU_BACKEND_WGPU)
     config.viewFormats = reinterpret_cast<const WGPUTextureFormat*>(configuredViewFormats.data());
-
     wgpuSurface.configure(config);
+#else
+    config.viewFormats = configuredViewFormats.data();
+    wgpuSurface.Configure(&config);
+#endif
     surfaceConfigured = true;
     lastConfiguredSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 
@@ -652,9 +661,13 @@ GLFWWebGPUBackend::GLFWWebGPUBackend(GLFWwindow* window_, bool capFrameRate)
     config.presentMode = wgpu::PresentMode::Fifo;
     configuredViewFormats[0] = swapChainFormat;
     config.viewFormatCount = 1;
+#if defined(WEBGPU_BACKEND_WGPU)
     config.viewFormats = reinterpret_cast<const WGPUTextureFormat*>(configuredViewFormats.data());
-
     wgpuSurface.configure(config);
+#else
+    config.viewFormats = configuredViewFormats.data();
+    wgpuSurface.Configure(&config);
+#endif
     surfaceConfigured = true;
     lastConfiguredSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 #endif
@@ -715,7 +728,11 @@ GLFWWebGPUBackend::~GLFWWebGPUBackend() {
 
     // Unconfigure surface before releasing device
     if (wgpuSurface && surfaceConfigured) {
+#if defined(WEBGPU_BACKEND_WGPU)
         wgpuSurface.unconfigure();
+#else
+        wgpuSurface.Unconfigure();
+#endif
         surfaceConfigured = false;
     }
 
@@ -799,7 +816,11 @@ void GLFWWebGPUBackend::swap() {
             std::lock_guard<SpinLock> guard(textureStateLock);
 
             if (currentTextureView && !framePresented) {
+#if defined(WEBGPU_BACKEND_WGPU)
                 wgpuSurface.present();
+#else
+                wgpuSurface.Present();
+#endif
                 framePresented = true;
 
                 // Move current resources to previous (keep them alive)
@@ -891,7 +912,11 @@ void* GLFWWebGPUBackend::getCurrentTextureView() {
     std::unique_lock<SpinLock> lock(textureStateLock);
 
     if (currentTextureView && !framePresented) {
+#if defined(WEBGPU_BACKEND_WGPU)
         return reinterpret_cast<void*>(static_cast<WGPUTextureView>(currentTextureView));
+#else
+        return reinterpret_cast<void*>(currentTextureView.Get());
+#endif
     }
 
     if (framePresented) {
@@ -1008,7 +1033,11 @@ void* GLFWWebGPUBackend::getCurrentTextureView() {
     }
 #endif
 
+#if defined(WEBGPU_BACKEND_WGPU)
     return reinterpret_cast<void*>(static_cast<WGPUTextureView>(currentTextureView));
+#else
+    return reinterpret_cast<void*>(currentTextureView.Get());
+#endif
 }
 
 mbgl::Size GLFWWebGPUBackend::getFramebufferSize() const {
@@ -1026,7 +1055,11 @@ void* GLFWWebGPUBackend::getDepthStencilView() {
         createDepthStencilTexture(static_cast<uint32_t>(std::max(width, 0)),
                                   static_cast<uint32_t>(std::max(height, 0)));
     }
+#if defined(WEBGPU_BACKEND_WGPU)
     return depthStencilView ? reinterpret_cast<void*>(static_cast<WGPUTextureView>(depthStencilView)) : nullptr;
+#else
+    return depthStencilView ? reinterpret_cast<void*>(depthStencilView.Get()) : nullptr;
+#endif
 }
 
 void GLFWWebGPUBackend::reconfigureSurface() {
@@ -1076,7 +1109,11 @@ void GLFWWebGPUBackend::reconfigureSurface() {
     config.height = height;
     config.presentMode = wgpu::PresentMode::Fifo;
 
+#if defined(WEBGPU_BACKEND_WGPU)
     wgpuSurface.configure(config);
+#else
+    wgpuSurface.Configure(&config);
+#endif
 
     createDepthStencilTexture(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
