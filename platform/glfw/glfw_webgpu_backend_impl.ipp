@@ -35,6 +35,8 @@
 
 #if !defined(WEBGPU_BACKEND_WGPU)
 #include <dawn/native/DawnNative.h>
+#else
+#include <webgpu/wgpu.h>
 #endif
 #include <mbgl/webgpu/wgpu_cpp_compat.hpp>
 #include <webgpu/webgpu.h>
@@ -1113,9 +1115,19 @@ void GLFWWebGPUBackend::reconfigureSurface() {
 }
 
 void GLFWWebGPUBackend::processEvents() {
-    // TODO(webgpu): hook Dawn event processing once the backend relies on it for
-    // resource lifecycle management. For now, MapLibre doesn't depend on these
-    // callbacks and invoking them triggers instability in the native backend.
+#if !defined(WEBGPU_BACKEND_WGPU)
+    // Dawn: Process device events for resource lifecycle management
+    // This ticks the Dawn device to process pending callbacks and resource cleanup
+    if (wgpuDevice) {
+        wgpuDeviceTick(wgpuDevice.Get());
+    }
+#else
+    // wgpu-native: Process device events using wgpuDevicePoll
+    // This is needed for pending work completion and resource cleanup
+    if (wgpuDevice) {
+        wgpuDevicePoll(static_cast<WGPUDevice>(wgpuDevice), false, nullptr);
+    }
+#endif
 }
 
 void GLFWWebGPUBackend::createDepthStencilTexture(uint32_t width, uint32_t height) {
