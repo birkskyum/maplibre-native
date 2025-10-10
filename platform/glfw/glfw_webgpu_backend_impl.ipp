@@ -789,12 +789,6 @@ void GLFWWebGPUBackend::swap() {
     lastSwapTime = now;
     swapCount++;
 
-    // Process any pending device work
-    processEvents();
-
-    // Run periodic maintenance
-    periodicMaintenance();
-
     // Note: Command buffer is already submitted in CommandEncoder::present()
     // before swap() is called, so we don't need to submit it again here.
 
@@ -894,12 +888,6 @@ void* GLFWWebGPUBackend::getCurrentTextureView() {
     if (!wgpuSurface || !surfaceConfigured) {
         return nullptr;
     }
-
-    // Process any pending device work before acquiring texture
-    processEvents();
-
-    // Run periodic maintenance
-    periodicMaintenance();
 
     // Check error threshold
     if (consecutiveErrors >= maxConsecutiveErrors) {
