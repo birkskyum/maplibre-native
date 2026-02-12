@@ -112,6 +112,14 @@ android {
                 }
             }
         }
+        create("webgpu") {
+            dimension = "renderer"
+            externalNativeBuild {
+                cmake {
+                    arguments("-DMLN_WITH_OPENGL=OFF", "-DMLN_WITH_VULKAN=OFF", "-DMLN_WITH_WEBGPU=ON", "-DMLN_WEBGPU_IMPL_DAWN=ON")
+                }
+            }
+        }
     }
 
     buildFeatures {
