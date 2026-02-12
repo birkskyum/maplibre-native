@@ -132,8 +132,21 @@ if(NOT WGPU_LIBRARY)
         list(APPEND _cargo_extra_args ${_wgpu_cargo_features})
     endif()
 
+    # On iOS, bindgen's clang_macro_fallback() uses a separate clang process that
+    # doesn't inherit the .clang_arg() settings from build.rs. We must set
+    # BINDGEN_EXTRA_CLANG_ARGS so it can find system headers (needed for UINT32_MAX etc.)
+    set(_cargo_env_prefix "")
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        execute_process(
+            COMMAND xcrun --sdk iphoneos --show-sdk-path
+            OUTPUT_VARIABLE _ios_sdk_path
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        set(_cargo_env_prefix ${CMAKE_COMMAND} -E env "BINDGEN_EXTRA_CLANG_ARGS=--target=arm64-apple-ios -isysroot ${_ios_sdk_path}")
+    endif()
+
     execute_process(
-        COMMAND ${CARGO_EXECUTABLE} build --release ${_cargo_extra_args}
+        COMMAND ${_cargo_env_prefix} ${CARGO_EXECUTABLE} build --release ${_cargo_extra_args}
         WORKING_DIRECTORY ${_mln_wgpu_source_dir}
         RESULT_VARIABLE _cargo_result
         OUTPUT_VARIABLE _cargo_output
