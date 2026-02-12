@@ -6,7 +6,7 @@ MapLibre Native for iOS supports multiple rendering backends. The backend is sel
 
 | Preset | Backend | Status | Notes |
 |---|---|---|---|
-| `ios` | Metal | Stable | Default, recommended for production |
+| `ios-metal` | Metal | Stable | Default, recommended for production |
 | `ios-webgpu-dawn` | WebGPU (Dawn) | Experimental | Uses Metal internally, see [WebGPU](./ios-webgpu.md) |
 | `ios-webgpu-wgpu` | WebGPU (wgpu-native) | Experimental | Uses Metal internally, see [WebGPU](./ios-webgpu.md) |
 
@@ -16,7 +16,7 @@ Each preset generates an Xcode project in its own build directory:
 
 ```bash
 # Metal (default)
-cmake --preset ios -DDEVELOPMENT_TEAM_ID=YOUR_TEAM_ID
+cmake --preset ios-metal -DDEVELOPMENT_TEAM_ID=YOUR_TEAM_ID
 xed build-ios/MapLibre\ Native.xcodeproj
 
 # WebGPU (Dawn)
@@ -38,7 +38,7 @@ cmake --build build-ios-webgpu-wgpu -- -sdk iphonesimulator -arch arm64
 
 Each preset passes different CMake variables that control which native rendering code gets compiled:
 
-- `ios`: `-DMLN_WITH_METAL=ON`
+- `ios-metal`: `-DMLN_WITH_METAL=ON`
 - `ios-webgpu-dawn`: `-DMLN_WITH_WEBGPU=ON -DMLN_WEBGPU_IMPL_DAWN=ON`
 - `ios-webgpu-wgpu`: `-DMLN_WITH_WEBGPU=ON -DMLN_WEBGPU_IMPL_WGPU=ON`
 

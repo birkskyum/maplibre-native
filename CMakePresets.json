@@ -38,8 +38,6 @@
       "inherits": "ios",
       "binaryDir": "${sourceDir}/build-ios-webgpu-dawn",
       "cacheVariables": {
-        "MLN_WITH_METAL": "OFF",
-        "MLN_WITH_OPENGL": "OFF",
         "MLN_WITH_WEBGPU": "ON",
         "MLN_WEBGPU_IMPL_DAWN": "ON"
       }
@@ -50,8 +48,6 @@
       "inherits": "ios",
       "binaryDir": "${sourceDir}/build-ios-webgpu-wgpu",
       "cacheVariables": {
-        "MLN_WITH_METAL": "OFF",
-        "MLN_WITH_OPENGL": "OFF",
         "MLN_WITH_WEBGPU": "ON",
         "MLN_WEBGPU_IMPL_WGPU": "ON"
 			}
