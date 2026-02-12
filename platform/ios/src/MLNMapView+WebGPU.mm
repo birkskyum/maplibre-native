@@ -642,17 +642,9 @@ void MLNMapViewWebGPUImpl::setPresentsWithTransaction(const bool value) {
 }
 
 void MLNMapViewWebGPUImpl::display() {
-    static int frameCount = 0;
-    frameCount++;
-
-    auto t0 = std::chrono::high_resolution_clock::now();
+    // The display link in MLNMapView already gates the frame rate.
+    // Call render() directly to trigger a frame.
     render();
-    auto t1 = std::chrono::high_resolution_clock::now();
-
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    if (ms > 30 || frameCount % 120 == 0) {
-        NSLog(@"[WebGPU] frame %d render took %lld ms", frameCount, ms);
-    }
 }
 
 void MLNMapViewWebGPUImpl::deleteView() {
