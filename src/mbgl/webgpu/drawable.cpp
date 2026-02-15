@@ -929,9 +929,8 @@ void Drawable::draw(PaintParameters& parameters) const {
         }
     }
 
-    // Draw indexed geometry - loop through segments (exactly like Metal does)
-    // WebGPU on iOS (Dawn/Metal) does not support non-zero baseVertex in drawIndexed.
-    // Instead, we adjust the vertex buffer offset per-segment to achieve the same effect.
+    // Dawn on iOS disables baseVertex in drawIndexed(), so we adjust the vertex
+    // buffer offset per-segment instead.
     std::size_t prevVertexOffset = 0;
     for (const auto& seg_ : impl->segments) {
         const auto& segment = static_cast<DrawSegment&>(*seg_);
@@ -941,14 +940,11 @@ void Drawable::draw(PaintParameters& parameters) const {
             const uint32_t indexOffset = static_cast<uint32_t>(mlSegment.indexOffset);
             const uint32_t baseInstance = 0;
 
-            // Check if encoder is valid before drawing
             if (!renderPassEncoder) {
                 Log::Error(Event::Render, "Render pass encoder became null before draw!");
                 return;
             }
 
-            // Re-bind vertex buffers with adjusted offset when vertexOffset changes.
-            // This emulates baseVertex for backends that don't support it (WebGPU on iOS).
             if (mlSegment.vertexOffset != prevVertexOffset) {
                 uint32_t rebindSlot = 0;
                 for (const auto& binding : uniqueBindings) {

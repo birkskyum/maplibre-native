@@ -23,10 +23,6 @@
 
 #include <cassert>
 
-// --------------------------------------------------------------------------
-// MLNWebGPUView — plain UIView backed by CAMetalLayer
-// --------------------------------------------------------------------------
-
 @interface MLNWebGPUView : UIView
 @end
 
@@ -36,18 +32,12 @@
 }
 @end
 
-// --------------------------------------------------------------------------
-// RenderableResource
-// --------------------------------------------------------------------------
-
 class MLNMapViewWebGPURenderableResource final : public mbgl::webgpu::RenderableResource {
 public:
     MLNMapViewWebGPURenderableResource(MLNMapViewWebGPUImpl& backend_)
         : backend(backend_) {}
 
-    void bind() override {
-        // No-op: command encoder managed by CommandEncoder class
-    }
+    void bind() override {}
 
     void swap() override {
         backend.presentSurface();
@@ -78,10 +68,6 @@ private:
     MLNMapViewWebGPUImpl& backend;
 };
 
-// --------------------------------------------------------------------------
-// Impl — private data
-// --------------------------------------------------------------------------
-
 class MLNMapViewWebGPUImpl::Impl {
 public:
 #if MLN_WEBGPU_IMPL_DAWN
@@ -111,34 +97,24 @@ public:
     NSUInteger activationCount = 0;
 };
 
-// --------------------------------------------------------------------------
-// Constructor — instance / adapter / device creation
-// --------------------------------------------------------------------------
-
 MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
     : MLNMapViewImpl(nativeView_),
       mbgl::webgpu::RendererBackend(mbgl::gfx::ContextMode::Unique),
       mbgl::gfx::Renderable({0, 0}, std::make_unique<MLNMapViewWebGPURenderableResource>(*this)),
       impl(std::make_unique<Impl>()) {
 
-
 #if MLN_WEBGPU_IMPL_DAWN
-    // Initialize the Dawn proc table (required when not using monolithic library)
+    // Required when not using the monolithic Dawn library.
     dawnProcSetProcs(&dawn::native::GetProcs());
 
-    // Initialize Dawn instance
     impl->instance = std::make_unique<dawn::native::Instance>();
 
-    // Enumerate adapters — prefer Metal on Apple platforms
     wgpu::RequestAdapterOptions metalOpts = {};
     metalOpts.backendType = wgpu::BackendType::Metal;
     std::vector<dawn::native::Adapter> adapters = impl->instance->EnumerateAdapters(&metalOpts);
-
     if (adapters.empty()) {
-        // Fallback: enumerate all adapters
         adapters = impl->instance->EnumerateAdapters();
     }
-
     if (adapters.empty()) {
         mbgl::Log::Error(mbgl::Event::Render, "WebGPU iOS: No adapters found");
         return;
@@ -146,7 +122,6 @@ MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
 
     dawn::native::Adapter& selectedAdapter = adapters[0];
 
-    // Check for Depth32FloatStencil8 feature
     bool hasDepth32FloatStencil8 = false;
     WGPUSupportedFeatures features = {};
     wgpuAdapterGetFeatures(selectedAdapter.Get(), &features);
@@ -160,16 +135,13 @@ MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
         wgpuSupportedFeaturesFreeMembers(features);
     }
 #elif MLN_WEBGPU_IMPL_WGPU
-    // Initialize wgpu-native instance
     wgpu::InstanceDescriptor instanceDesc = {};
     impl->instance = wgpu::createInstance(instanceDesc);
-
     if (!impl->instance) {
         mbgl::Log::Error(mbgl::Event::Render, "WebGPU iOS: Failed to create instance");
         return;
     }
 
-    // Request adapter — prefer Metal on Apple platforms
     wgpu::RequestAdapterOptions adapterOpts = {};
     adapterOpts.powerPreference = wgpu::PowerPreference::HighPerformance;
     adapterOpts.backendType = wgpu::BackendType::Metal;
@@ -180,10 +152,8 @@ MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
         return;
     }
 
-    // Check for Depth32FloatStencil8 feature
-    wgpu::Adapter cppAdapter = impl->adapter;
-    bool hasDepth32FloatStencil8 = false;
     WGPUSupportedFeatures features = {};
+    bool hasDepth32FloatStencil8 = false;
     wgpuAdapterGetFeatures(static_cast<WGPUAdapter>(impl->adapter), &features);
     if (features.featureCount > 0 && features.features) {
         for (size_t i = 0; i < features.featureCount; ++i) {
@@ -203,7 +173,6 @@ MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
         depthStencilFormat = wgpu::TextureFormat::Depth32FloatStencil8;
     }
 
-    // Create device
     wgpu::DeviceDescriptor deviceDesc = {};
 #if MLN_WEBGPU_IMPL_DAWN
     deviceDesc.label = "MapLibre iOS WebGPU Device";
@@ -247,14 +216,9 @@ MLNMapViewWebGPUImpl::MLNMapViewWebGPUImpl(MLNMapView* nativeView_)
     setDepthStencilFormat(depthStencilFormat);
 }
 
-// --------------------------------------------------------------------------
-// Destructor
-// --------------------------------------------------------------------------
-
 MLNMapViewWebGPUImpl::~MLNMapViewWebGPUImpl() {
     if (!impl) return;
 
-    // Release texture views and textures
     if (impl->currentTextureView) {
         wgpuTextureViewRelease(impl->currentTextureView);
         impl->currentTextureView = nullptr;
@@ -273,7 +237,6 @@ MLNMapViewWebGPUImpl::~MLNMapViewWebGPUImpl() {
         impl->depthStencilTexture = nullptr;
     }
 
-    // Unconfigure and release surface
     if (impl->surface) {
         if (impl->surfaceConfigured) {
             wgpuSurfaceUnconfigure(impl->surface);
@@ -282,7 +245,6 @@ MLNMapViewWebGPUImpl::~MLNMapViewWebGPUImpl() {
         impl->surface = nullptr;
     }
 
-    // Release device, queue, and adapter
     impl->queue = nullptr;
     impl->device = nullptr;
 #if MLN_WEBGPU_IMPL_DAWN
@@ -296,10 +258,6 @@ MLNMapViewWebGPUImpl::~MLNMapViewWebGPUImpl() {
     impl->instance = nullptr;
 #endif
 }
-
-// --------------------------------------------------------------------------
-// createView — iOS-specific
-// --------------------------------------------------------------------------
 
 void MLNMapViewWebGPUImpl::createView() {
     if (impl->webGPUView) {
@@ -325,7 +283,7 @@ void MLNMapViewWebGPUImpl::createView() {
     metalLayer.drawableSize = drawableSize;
 
 #if MLN_WEBGPU_IMPL_DAWN
-    // For Dawn, set the Metal device on the layer so Dawn can use it
+    // Dawn needs the Metal device set on the layer before creating a surface.
     id<MTLDevice> mtlDevice = dawn::native::metal::GetMTLDevice(impl->device.Get());
     metalLayer.device = mtlDevice;
 #endif
@@ -336,7 +294,6 @@ void MLNMapViewWebGPUImpl::createView() {
 
     [mapView insertSubview:impl->webGPUView atIndex:0];
 
-    // Create the WebGPU surface and configure it
     createSurface();
 
     uint32_t w = static_cast<uint32_t>(drawableSize.width);
@@ -347,10 +304,6 @@ void MLNMapViewWebGPUImpl::createView() {
         configureSurface(w, h);
     }
 }
-
-// --------------------------------------------------------------------------
-// createSurface — from CAMetalLayer
-// --------------------------------------------------------------------------
 
 void MLNMapViewWebGPUImpl::createSurface() {
     if (!impl->webGPUView) return;
@@ -387,14 +340,9 @@ void MLNMapViewWebGPUImpl::createSurface() {
     }
 }
 
-// --------------------------------------------------------------------------
-// configureSurface — verbatim from Android backend
-// --------------------------------------------------------------------------
-
 void MLNMapViewWebGPUImpl::configureSurface(uint32_t width, uint32_t height) {
     if (!impl->surface || !impl->device || width == 0 || height == 0) return;
 
-    // Query surface capabilities to pick a format
     WGPUSurfaceCapabilities capabilities = {};
 #if MLN_WEBGPU_IMPL_DAWN
     WGPUStatus capStatus = wgpuSurfaceGetCapabilities(impl->surface, impl->adapter, &capabilities);
@@ -406,7 +354,6 @@ void MLNMapViewWebGPUImpl::configureSurface(uint32_t width, uint32_t height) {
     WGPUPresentMode selectedPresentMode = WGPUPresentMode_Fifo;
 
     if (capStatus == WGPUStatus_Success) {
-        // Pick preferred format
         const WGPUTextureFormat preferredFormats[] = {
             WGPUTextureFormat_BGRA8Unorm,
             WGPUTextureFormat_RGBA8Unorm,
@@ -455,10 +402,6 @@ void MLNMapViewWebGPUImpl::configureSurface(uint32_t width, uint32_t height) {
 
     createDepthStencilTexture(width, height);
 }
-
-// --------------------------------------------------------------------------
-// createDepthStencilTexture — verbatim from Android backend
-// --------------------------------------------------------------------------
 
 void MLNMapViewWebGPUImpl::createDepthStencilTexture(uint32_t width, uint32_t height) {
     if (impl->depthStencilView) {
@@ -516,16 +459,11 @@ void MLNMapViewWebGPUImpl::createDepthStencilTexture(uint32_t width, uint32_t he
     }
 }
 
-// --------------------------------------------------------------------------
-// getCurrentTextureView — verbatim from Android backend
-// --------------------------------------------------------------------------
-
 void* MLNMapViewWebGPUImpl::getCurrentTextureView() {
     if (!impl->surface || !impl->surfaceConfigured) {
         return nullptr;
     }
 
-    // Release previous texture view
     if (impl->currentTextureView) {
         wgpuTextureViewRelease(impl->currentTextureView);
         impl->currentTextureView = nullptr;
@@ -576,10 +514,6 @@ void* MLNMapViewWebGPUImpl::getCurrentTextureView() {
     return impl->currentTextureView;
 }
 
-// --------------------------------------------------------------------------
-// presentSurface — verbatim from Android backend
-// --------------------------------------------------------------------------
-
 void MLNMapViewWebGPUImpl::presentSurface() {
     if (!impl->surface || !impl->surfaceConfigured) {
         return;
@@ -596,7 +530,6 @@ void MLNMapViewWebGPUImpl::presentSurface() {
         impl->currentTexture = nullptr;
     }
 
-    // Process pending callbacks
     if (impl->device) {
 #if MLN_WEBGPU_IMPL_DAWN
         wgpuDeviceTick(impl->device.Get());
@@ -606,10 +539,6 @@ void MLNMapViewWebGPUImpl::presentSurface() {
     }
 }
 
-// --------------------------------------------------------------------------
-// getDepthStencilView / getFramebufferSize
-// --------------------------------------------------------------------------
-
 void* MLNMapViewWebGPUImpl::getDepthStencilView() {
     return impl->depthStencilView;
 }
@@ -617,10 +546,6 @@ void* MLNMapViewWebGPUImpl::getDepthStencilView() {
 mbgl::Size MLNMapViewWebGPUImpl::getFramebufferSize() const {
     return impl->framebufferSize;
 }
-
-// --------------------------------------------------------------------------
-// MLNMapViewImpl interface
-// --------------------------------------------------------------------------
 
 UIView* MLNMapViewWebGPUImpl::getView() {
     return impl->webGPUView;
@@ -642,13 +567,10 @@ void MLNMapViewWebGPUImpl::setPresentsWithTransaction(const bool value) {
 }
 
 void MLNMapViewWebGPUImpl::display() {
-    // The display link in MLNMapView already gates the frame rate.
-    // Call render() directly to trigger a frame.
     render();
 }
 
 void MLNMapViewWebGPUImpl::deleteView() {
-    // Release texture views and textures
     if (impl->currentTextureView) {
         wgpuTextureViewRelease(impl->currentTextureView);
         impl->currentTextureView = nullptr;
@@ -667,7 +589,6 @@ void MLNMapViewWebGPUImpl::deleteView() {
         impl->depthStencilTexture = nullptr;
     }
 
-    // Unconfigure and release surface
     if (impl->surface) {
         if (impl->surfaceConfigured) {
             wgpuSurfaceUnconfigure(impl->surface);
@@ -699,7 +620,6 @@ void MLNMapViewWebGPUImpl::layoutChanged() {
     impl->framebufferSize = {w, h};
     size = impl->framebufferSize;
 
-    // Release current texture view since the surface is being reconfigured
     if (impl->currentTextureView) {
         wgpuTextureViewRelease(impl->currentTextureView);
         impl->currentTextureView = nullptr;
@@ -721,10 +641,6 @@ UIImage* MLNMapViewWebGPUImpl::snapshot() {
 MLNBackendResource* MLNMapViewWebGPUImpl::getObject() {
     return [[MLNBackendResource alloc] init];
 }
-
-// --------------------------------------------------------------------------
-// activate / deactivate / updateAssumedState
-// --------------------------------------------------------------------------
 
 void MLNMapViewWebGPUImpl::activate() {
     if (impl->activationCount++) {
